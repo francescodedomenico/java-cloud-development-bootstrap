@@ -9,6 +9,8 @@ Francesco De Domenico
 * https://www.baeldung.com/[*Baeldung blog*]: blog con molti tutorials ed esempi sulle librerie ed il framework Spring e Springboot
 * https://amzn.to/3UqWkYG[*[ENG\] Pro Spring Boot 2: An Authoritative Guide to Building Microservices, Web and Enterprise Applications, and Best Practices*] - Felipe Gutierrez
 * https://amzn.to/3dktGHK[*[ENG\] Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools*] - Iuliana Cosmina, Rob Harrop, Chris Schaefer, Clarence Ho 
+* https://amzn.to/3dkGgqs[*[ITA\] Concetti di informatica e fondamenti di Java -  Cay S. Horstmann]
+
 
 == Prerequisiti
 
@@ -31,11 +33,15 @@ Francesco De Domenico
 .. RESTful APIs
 .. Che cos'è un webserver?
 . DB Transazionali
+.. MySQL/MariaDB
 .. Creazione tabelle
 .. Queries con joins
 .. Transazioni
 .. Foreign keys
 .. Script di inizializzazione tabelle e popolamento database
+. Source distributed version control systems
+.. Git: cos'è?
+... Concetti base: branches, commit, merge, risoluzione dei conflitti, stashing
 
 == Obiettivi
 
