@@ -1,0 +1,50 @@
+= Java Cloud Development Bootstrap
+Francesco De Domenico
+
+:toc: left
+
+== Risorse
+
+* https://www.baeldung.com/[*Baeldung blog*]: blog con molti tutorials ed esempi sulle librerie ed il framework Spring e Springboot
+* Pro Spring Boot 2: An Authoritative Guide to Building Microservices, Web and Enterprise Applications, and Best Practices - Felipe Gutierrez
+* Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools - Iuliana Cosmina, Rob Harrop, Chris Schaefer, Clarence Ho 
+
+== Obiettivi
+
+. Fondamenti di Java e programmazione ad oggetti
+.. Java 8+
+.. Bean Injection
+.. Stream API => lambda functions
+.. Exception handling
+.. Java Annotations "@"
+. HTTP & Network
+.. Fondamenti (com'è fatta una richiesta HTTP? Verbo, Headers, Corpo)
+.. RESTful APIs
+.. Che cos'è un webserver?
+. DB Transazionali
+.. Creazione tabelle
+.. Queries con joins
+.. Transazioni
+.. Foreign keys
+.. Script di inizializzazione tabelle e popolamento database
+. Spring + Spring Boot
+.. Cos'è un framework? 
+.. Cos'è il paradigma MVC?
+.. Spring Bean Initialization & @SpringApplication
+.. @Component, @Client, @Service, @Controller, @Configuration, @Value
+.. Spring @Entity
+.. @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
+.. Hibernate
+.. Spring Repositories
+.. JPA Queries
+.. Object serialization/deserialization through Jackson
+.. Lombok Annotations
+. Docker
+.. Docker images, orchestrazione ed interfacciamento con OS host (es: Ports Expose)
+.. Dockerfile: struttura e sintassi
+... Creazione Dockerfile per applicativo Springboot
+.. Docker Compose: struttura e sintassi
+... Composizione servizi, volumes, volumes mount
+... Comandi compose per esecuzione
+
+
