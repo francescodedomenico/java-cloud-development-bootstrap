@@ -21,8 +21,12 @@ Francesco De Domenico
 .. Exception handling
 .. Java Annotations "@"
 .. equals and hashcode: differenze ed usi
-. HTTP & Network
-.. Fondamenti (com'è fatta una richiesta HTTP? Verbo, Headers, Corpo)
+. Network, HTTP & Web
+.. Fondamenti:
+... com'è fatta una richiesta HTTP?
+... Verbo, Headers, Corpo della richiesta, corpo della risposta
+... mime-type, Content-Types
+... Web markup/notations: HTML, XML, JSON, YAML
 .. RESTful APIs
 .. Che cos'è un webserver?
 . DB Transazionali
