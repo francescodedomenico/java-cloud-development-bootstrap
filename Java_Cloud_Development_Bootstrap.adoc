@@ -1,6 +1,5 @@
 = Java Cloud Development Bootstrap
 Francesco De Domenico
-
 :toc: left
 
 == Risorse
