@@ -10,7 +10,7 @@ Francesco De Domenico
 * https://amzn.to/3UqWkYG[*[ENG\] Pro Spring Boot 2: An Authoritative Guide to Building Microservices, Web and Enterprise Applications, and Best Practices*] - Felipe Gutierrez
 * https://amzn.to/3dktGHK[*[ENG\] Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools*] - Iuliana Cosmina, Rob Harrop, Chris Schaefer, Clarence Ho 
 
-== Obiettivi
+== Prerequisiti
 
 . Fondamenti di Java e programmazione ad oggetti
 .. Java 8+
@@ -35,6 +35,9 @@ Francesco De Domenico
 .. Transazioni
 .. Foreign keys
 .. Script di inizializzazione tabelle e popolamento database
+
+== Obiettivi
+
 . Spring + Spring Boot
 .. Cos'è un framework? 
 .. Cos'è il paradigma MVC?
