@@ -21,6 +21,7 @@ Francesco De Domenico
 .. Exception handling
 .. Java Annotations "@"
 .. equals and hashcode: differenze ed usi
+.. Project Management tools: Maven & Gradle
 . Network, HTTP & Web
 .. Fondamenti:
 ... com'è fatta una richiesta HTTP?
