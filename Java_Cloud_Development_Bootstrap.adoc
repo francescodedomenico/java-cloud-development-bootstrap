@@ -24,12 +24,17 @@ Francesco De Domenico
 .. Java Annotations "@"
 .. equals and hashcode: differenze ed usi
 .. Project Management tools: Maven & Gradle
+.. Data and SW Modeling: XML & ER diagrams
 . Network, HTTP & Web
 .. Fondamenti:
 ... com'è fatta una richiesta HTTP?
 ... Verbo, Headers, Corpo della richiesta, corpo della risposta
 ... mime-type, Content-Types
 ... Web markup/notations: HTML, XML, JSON, YAML
+... CORS
+.. Web Standards
+... JWT
+... OAuth2: REST + Bearer Token
 .. RESTful APIs
 .. Che cos'è un webserver?
 . DB Transazionali
@@ -57,6 +62,7 @@ Francesco De Domenico
 .. JPA Queries
 .. Object serialization/deserialization through Jackson
 .. Lombok Annotations
+.. CrossOrigin
 . Docker
 .. Docker images, orchestrazione ed interfacciamento con OS host (es: Ports Expose)
 .. Dockerfile: struttura e sintassi
@@ -68,5 +74,6 @@ Francesco De Domenico
 .. Relazione tra Kubernetes e Docker
 .. Worker, node e pods
 .. Secrets ed Environment Variabiles di un deployment Kubernetes
+
 
 == Esercizi
