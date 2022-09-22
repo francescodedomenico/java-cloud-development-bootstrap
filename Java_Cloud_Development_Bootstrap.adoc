@@ -1,7 +1,7 @@
 = Java Cloud Development Bootstrap
 Francesco De Domenico
 :toc: left
-:source-highlighter: highlightjs
+:source-highlighter: rouge
 
 == Introduzione
 
@@ -98,9 +98,9 @@ Una volta installato Visual Studio Code installare le seguenti estensioni:
 * https://marketplace.visualstudio.com/items?itemName=redhat.java[Language support for Java ™ for Visual Studio Code]
 * https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack[Spring Boot Extension Pack]
 
-== Esercizi
+== Esercizi: Getting Started
 
-=== 1.1 Hello World!
+=== 1.1
 
 Tramite https://start.spring.io/[spring initializr] generare un nuovo progetto Gradle con linguaggio Java 17 e versione Spring 2.7.*.
 
@@ -133,3 +133,23 @@ Modificare l'esercizio precedente affichè l'api risponda dinamicamente al nome 
 * Cookie value *nome*
 
 Nel caso in cui nessuno di questi parametri sia passato restituire il valore di default *Hello, World!*
+
+
+== Soluzioni
+
+[source, java]
+----
+package com.example.demo.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloWorldController {
+    @GetMapping(path="/hello")
+    public ResponseEntity<String> helloWorld(){
+        return ResponseEntity.ok().body("Hello, World!");
+    }
+}
+----
