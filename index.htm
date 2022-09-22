@@ -666,7 +666,11 @@ pre.rouge {
 <li><a href="#_prerequisiti">Prerequisiti</a></li>
 <li><a href="#_obiettivi">Obiettivi</a></li>
 <li><a href="#_per_iniziare">Per iniziare</a></li>
-<li><a href="#_esercizi">Esercizi</a></li>
+<li><a href="#_esercizi">Esercizi</a>
+<ul class="sectlevel2">
+<li><a href="#_hello_world">Hello World!</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -975,13 +979,43 @@ pre.rouge {
 <div class="sect1">
 <h2 id="_esercizi">Esercizi</h2>
 <div class="sectionbody">
-
+<div class="sect2">
+<h3 id="_hello_world">Hello World!</h3>
+<div class="paragraph">
+<p>Tramite <a href="https://start.spring.io/">spring initializr</a> generare un nuovo progetto Gradle con linguaggio Java 17 e versione Spring 2.7.*.</p>
+</div>
+<div class="paragraph">
+<p>Aggiungere come dipendenze:
+*   Spring Web</p>
+</div>
+<div class="paragraph">
+<p>Aprire il progetto Gradle tramite VSCode.</p>
+</div>
+<div class="paragraph">
+<p>Lo scopo dell&#8217;esercizio è creare una classe @Controller che effettui il bind sul webserver integrato sul path <strong>/hello</strong>.</p>
+</div>
+<div class="paragraph">
+<p>In particolare il webserver sarà in ascolto sulla porta 8080 e l&#8217;API risponderà con un corpo di tipo String.</p>
+</div>
+<div class="paragraph">
+<p>La risposta desiderata sarà:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">curl http://localhost:8080/hello
+Hello, World!</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>La classe Controller dovrà essere contenuto in un nuovo sub_package del medesimo package di DemoApplication.java</p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-22 18:11:07 +0200
+Last updated 2022-09-22 18:52:06 +0200
 </div>
 </div>
 </body>

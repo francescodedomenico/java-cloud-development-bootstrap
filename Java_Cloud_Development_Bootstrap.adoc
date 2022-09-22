@@ -99,3 +99,26 @@ Una volta installato Visual Studio Code installare le seguenti estensioni:
 * https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack[Spring Boot Extension Pack]
 
 == Esercizi
+
+=== Hello World!
+
+Tramite https://start.spring.io/[spring initializr] generare un nuovo progetto Gradle con linguaggio Java 17 e versione Spring 2.7.*.
+
+Aggiungere come dipendenze:
+*   Spring Web
+
+Aprire il progetto Gradle tramite VSCode.
+
+Lo scopo dell'esercizio è creare una classe @Controller che effettui il bind sul webserver integrato sul path */hello*.
+
+In particolare il webserver sarà in ascolto sulla porta 8080 e l'API risponderà con un corpo di tipo String.
+
+La risposta desiderata sarà:
+
+[source, shell]
+----
+curl http://localhost:8080/hello
+Hello, World!
+----
+
+La classe Controller dovrà essere contenuto in un nuovo sub_package del medesimo package di DemoApplication.java
