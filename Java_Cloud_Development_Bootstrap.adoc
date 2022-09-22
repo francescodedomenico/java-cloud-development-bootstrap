@@ -81,16 +81,17 @@ Francesco De Domenico
 Al fine di installare il software necessario, su Windows, si suggerisce l'installazione del package manager *chocolatey*.
 
 Aprire terminale Powershell ed eseguire:
-[source, powershell]
-----
-PS> Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-----
+
+[source]
+--
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+--
 
 Una volta installato il package manager potrà essere utilizzato per installare il software propedeutico allo sviluppo:
 
 [source, powershell]
 ----
-PS> choco install vscode temurin17 maven gradle
+choco install vscode temurin17 maven gradle
 ----
 Una volta installato Visual Studio Code installare le seguenti estensioni:
 
