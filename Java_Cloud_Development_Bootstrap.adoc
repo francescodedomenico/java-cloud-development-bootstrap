@@ -1,6 +1,7 @@
 = Java Cloud Development Bootstrap
 Francesco De Domenico
 :toc: left
+:source-highlighter: rouge
 
 == Introduzione
 
@@ -75,5 +76,25 @@ Francesco De Domenico
 .. Worker, node e pods
 .. Secrets ed Environment Variabiles di un deployment Kubernetes
 
+== Per iniziare
+
+Al fine di installare il software necessario, su Windows, si suggerisce l'installazione del package manager *chocolatey*.
+
+Aprire terminale Powershell ed eseguire:
+[source, powershell]
+----
+PS> Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+----
+
+Una volta installato il package manager potrà essere utilizzato per installare il software propedeutico allo sviluppo:
+
+[source, powershell]
+----
+PS> choco install vscode temurin17 maven gradle
+----
+Una volta installato Visual Studio Code installare le seguenti estensioni:
+
+* https://marketplace.visualstudio.com/items?itemName=redhat.java[Language support for Java ™ for Visual Studio Code]
+* https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack[Spring Boot Extension Pack]
 
 == Esercizi
