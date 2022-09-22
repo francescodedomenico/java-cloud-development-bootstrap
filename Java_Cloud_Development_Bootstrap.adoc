@@ -1,7 +1,7 @@
 = Java Cloud Development Bootstrap
 Francesco De Domenico
 :toc: left
-:source-highlighter: rouge
+:source-highlighter: highlightjs
 
 == Introduzione
 
@@ -91,7 +91,7 @@ Una volta installato il package manager potrà essere utilizzato per installare 
 
 [source, powershell]
 ----
-choco install vscode temurin17 maven gradle
+choco install vscode temurin17 maven gradle curl
 ----
 Una volta installato Visual Studio Code installare le seguenti estensioni:
 
@@ -100,7 +100,7 @@ Una volta installato Visual Studio Code installare le seguenti estensioni:
 
 == Esercizi
 
-=== Hello World!
+=== 1.1 Hello World!
 
 Tramite https://start.spring.io/[spring initializr] generare un nuovo progetto Gradle con linguaggio Java 17 e versione Spring 2.7.*.
 
@@ -122,3 +122,14 @@ Hello, World!
 ----
 
 La classe Controller dovrà essere contenuto in un nuovo sub_package del medesimo package di DemoApplication.java
+
+=== 1.2
+
+Modificare l'esercizio precedente affichè l'api risponda dinamicamente al nome dell'utente. Il nome utente potrà essere passato con uno dei seguenti parametri opzionali:
+
+* query string parameter *nome*
+* path parameter
+* HTTP Header
+* Cookie value *nome*
+
+Nel caso in cui nessuno di questi parametri sia passato restituire il valore di default *Hello, World!*
