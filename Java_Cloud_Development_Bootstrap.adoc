@@ -25,7 +25,7 @@ Francesco De Domenico
 .. Java Annotations "@"
 .. equals and hashcode: differenze ed usi
 .. Project Management tools: Maven & Gradle
-.. Data and SW Modeling: XML & ER diagrams
+.. Data and SW Modeling: UML & ER diagrams
 . Network, HTTP & Web
 .. Fondamenti:
 ... com'è fatta una richiesta HTTP?
