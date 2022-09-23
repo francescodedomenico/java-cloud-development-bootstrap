@@ -81,19 +81,19 @@ Francesco De Domenico
 
 === git
 
-video::N_bMCff8q6A[youtube, width=1280, height=720]
+video::N_bMCff8q6A[youtube, width=800, height=450]
 
 === Spring Boot
 
-video::vtPkZShrvXQ[youtube, width=1280, height=720]
+video::vtPkZShrvXQ[youtube, width=800, height=450]
 
 === Docker
 
-video::3c-iBn73dDE[youtube, width=1280, height=720]
+video::3c-iBn73dDE[youtube, width=800, height=450]
 
 === Kubernetes
 
-video::X48VuDVv0do[youtube, width=1280, height=720]
+video::d6WC5n9G_sM[youtube, width=800, height=450]
 
 == Per iniziare
 
