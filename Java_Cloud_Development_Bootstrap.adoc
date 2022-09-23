@@ -153,6 +153,11 @@ Modificare l'esercizio precedente affichè l'api risponda dinamicamente al nome 
 
 Nel caso in cui nessuno di questi parametri sia passato restituire il valore di default *Hello, World!*
 
+=== 1.3
+
+Modificare l'API /hello affichè accetti un @RequestBody json con unico parametro *nome* in modo che l'API risponda con il nome dell'utente. L'API Risponderà con verbo POST
+
+
 
 == Soluzioni
 
