@@ -45,12 +45,13 @@ Francesco De Domenico
 .. Transazioni
 .. Foreign keys
 .. Script di inizializzazione tabelle e popolamento database
-. Source distributed version control systems
-.. Git: cos'è?
-... Concetti base: branches, commit, merge, risoluzione dei conflitti, stashing
+
 
 == Obiettivi
-
+. Source distributed version control systems
+.. Git: di cosa si tratta?
+... Concetti base: branches, commit, merge, risoluzione dei conflitti, stashing
+.. CI/CD: di cosa si tratta?
 . Spring + Spring Boot
 .. Cos'è un framework? 
 .. Cos'è il paradigma MVC?
@@ -75,6 +76,24 @@ Francesco De Domenico
 .. Relazione tra Kubernetes e Docker
 .. Worker, node e pods
 .. Secrets ed Environment Variabiles di un deployment Kubernetes
+
+== Corso: Video tutorials
+
+=== git
+
+video::N_bMCff8q6A[youtube, width=1280, height=720]
+
+=== Spring Boot
+
+video::vtPkZShrvXQ[youtube, width=1280, height=720]
+
+=== Docker
+
+video::3c-iBn73dDE[youtube, width=1280, height=720]
+
+=== Kubernetes
+
+video::X48VuDVv0do[youtube, width=1280, height=720]
 
 == Per iniziare
 
