@@ -172,6 +172,8 @@ Creare un subpackage *dto* al cui interno creeremo una classe *Employee*. Employ
 * sex: m/f
 * RAL: intero
 
+In particolare il campo matricola definisce in maniera univoca l'impiegato.
+
 creare un'API GET /employee che restituisca un impiegato fittizio, la risposta attesa dovrà essere:
 
 [source, json]
@@ -212,6 +214,8 @@ Creare un'api GET /employees che restituisca una lista di impiegati Employee. Ou
     }
 ]
 ----
+
+WARNING: Quando avete creato l'oggetto Employee, avete definito i metodi equals ed hashcode? Perchè sono importanti?
 
 === 1.6
 Creare un'api POST /employee che aggiunta un impiegato alla lista esistente di impiegati Employee. Il request body dovrà essere in formato JSON l'API risponde con la lista di impiegati aggiornata.
