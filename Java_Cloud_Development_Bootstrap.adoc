@@ -117,6 +117,9 @@ Una volta installato Visual Studio Code installare le seguenti estensioni:
 * https://marketplace.visualstudio.com/items?itemName=redhat.java[Language support for Java ™ for Visual Studio Code]
 * https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack[Spring Boot Extension Pack]
 
+
+== Capitolo 1: Che cos'è Spring? E Spring Boot?
+
 == Esercizi: Getting Started
 
 === 1.1
@@ -157,7 +160,58 @@ Nel caso in cui nessuno di questi parametri sia passato restituire il valore di 
 
 Modificare l'API /hello affichè accetti un @RequestBody json con unico parametro *nome* in modo che l'API risponda con il nome dell'utente. L'API Risponderà con verbo POST
 
+=== 1.4
 
+Creare un subpackage *dto* al cui interno creeremo una classe *Employee*. Employee rappresente l'impiegato di un determinato dominio aziendale così caratterizzato.
+
+* matricola: intero
+* name: testo
+* surname: testo
+* displayName: name + surname
+* birthdate: data di nascita
+* sex: m/f
+* RAL: intero
+
+creare un'API GET /employee che restituisca un impiegato fittizio, la risposta attesa dovrà essere:
+
+[source, json]
+----
+{
+    "matricola": 1022891,
+    "name": "Mario",
+    "surname": "Rossi",
+    "displayName": "Mario Rossi",
+    "birthdate": "01-01-1989",
+    "sex":"m",
+    "RAL": 30000
+}
+----
+
+=== 1.5
+Creare un'api GET /employees che restituisca una lista di impiegati Employee. Output atteso:
+[source, json]
+----
+[
+    {
+    "matricola": 1022891,
+    "name": "Mario",
+    "surname": "Rossi",
+    "displayName": "Mario Rossi",
+    "birthdate": "01-01-1989",
+    "sex":"m",
+    "RAL": 30000
+    }
+    {
+    "matricola": 1022892,
+    "name": "Flavia",
+    "surname": "Rossi",
+    "displayName": "Flavia Rossi",
+    "birthdate": "02-01-1989",
+    "sex":"f",
+    "RAL": 30000
+    }
+]
+----
 
 == Soluzioni
 
