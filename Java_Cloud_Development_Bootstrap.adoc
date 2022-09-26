@@ -110,7 +110,7 @@ Una volta installato il package manager potrà essere utilizzato per installare 
 
 [source, powershell]
 ----
-choco install vscode temurin17 maven gradle curl git postman
+choco install vscode temurin17 maven gradle curl git postman chocolateygui
 ----
 Una volta installato Visual Studio Code installare le seguenti estensioni:
 
