@@ -243,6 +243,9 @@ Creare un'api POST /employee che aggiunta un impiegato alla lista esistente di i
 === 1.7
 Creare un'api PUT /employee/{matricola} che aggiorni la RAL di un impiegato data la sua matricola, il parametro sarà passato come corpo della richiesta in formato x-www-form-urlencoded
 
+=== 1.8
+Arricchire l'API precedente per modificare qualunque campo dell'impiegato, esclusa la matricola
+
 
 == Soluzioni
 
