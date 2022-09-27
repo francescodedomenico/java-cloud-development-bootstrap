@@ -171,10 +171,18 @@ Esistono vari motori di ricerca dedicati a questo scopo, uno dei più popolari, 
 Non solo è possibile generare i tag necessari all'inclusione dei pacchetti nel nostro file di distribuzione, ma vengono anche indicate le vulnerabilità (CVE) delle versioni specifiche di ogni dipendenza.
 ====
 
-
-
 === 1.2 Il mio primo progetto Spring
 
+Una volta generato il progetto su spring initializr avremo una struttura sul file system fatta in questo modo:
+
+image::./img/demoproject.png[]
+
+I file rilevanti per l'utilizzo sono:
+
+* DemoApplication.java: file principale dell'applicazione, entry point di Spring Boot
+* application.properties: file di configurazione in formato properties java
+* DemoApplicationTest.java: file di esempio contenente UnitTests
+* pom.xml: file di distribuzione Maven
 
 === Esercizi: Getting Started
 
