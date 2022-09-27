@@ -679,18 +679,7 @@ pre.rouge {
 <ul class="sectlevel2">
 <li><a href="#_1_1_introduzione">1.1 Introduzione</a></li>
 <li><a href="#_1_2_il_mio_primo_progetto_spring">1.2 Il mio primo progetto Spring</a></li>
-</ul>
-</li>
-<li><a href="#_esercizi_getting_started">Esercizi: Getting Started</a>
-<ul class="sectlevel2">
-<li><a href="#_1_1">1.1</a></li>
-<li><a href="#_1_2">1.2</a></li>
-<li><a href="#_1_3">1.3</a></li>
-<li><a href="#_1_4">1.4</a></li>
-<li><a href="#_1_5">1.5</a></li>
-<li><a href="#_1_6">1.6</a></li>
-<li><a href="#_1_7">1.7</a></li>
-<li><a href="#_1_8">1.8</a></li>
+<li><a href="#_esercizi_getting_started">Esercizi: Getting Started</a></li>
 </ul>
 </li>
 <li><a href="#_soluzioni">Soluzioni</a></li>
@@ -1084,13 +1073,10 @@ Un archivio <strong>jar</strong> che contenga tutto il necessario senza bisogno 
 <h3 id="_1_2_il_mio_primo_progetto_spring">1.2 Il mio primo progetto Spring</h3>
 
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_esercizi_getting_started">Esercizi: Getting Started</h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_1_1">1.1</h3>
+<h3 id="_esercizi_getting_started">Esercizi: Getting Started</h3>
+<div class="sect3">
+<h4 id="_1_1_hello_world">1.1 Hello World!</h4>
 <div class="paragraph">
 <p>Tramite <a href="https://start.spring.io/">spring initializr</a> generare un nuovo progetto Gradle con linguaggio Java 17 e versione Spring 2.7.*.</p>
 </div>
@@ -1120,8 +1106,8 @@ Hello, World!</code></pre>
 <p>La classe Controller dovrà essere contenuto in un nuovo sub_package del medesimo package di DemoApplication.java</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_2">1.2</h3>
+<div class="sect3">
+<h4 id="_1_2_request_params">1.2 Request Params</h4>
 <div class="paragraph">
 <p>Modificare l&#8217;esercizio precedente affichè l&#8217;api risponda dinamicamente al nome dell&#8217;utente. Il nome utente potrà essere passato con uno dei seguenti parametri opzionali:</p>
 </div>
@@ -1145,14 +1131,14 @@ Hello, World!</code></pre>
 <p>Nel caso in cui nessuno di questi parametri sia passato restituire il valore di default <strong>Hello, World!</strong></p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_3">1.3</h3>
+<div class="sect3">
+<h4 id="_1_3_request_body">1.3 Request Body</h4>
 <div class="paragraph">
 <p>Modificare l&#8217;API /hello affichè accetti un @RequestBody json con unico parametro <strong>nome</strong> in modo che l&#8217;API risponda con il nome dell&#8217;utente. L&#8217;API Risponderà con verbo POST</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_4">1.4</h3>
+<div class="sect3">
+<h4 id="_1_4_dto_employee">1.4 DTO Employee</h4>
 <div class="paragraph">
 <p>Creare un subpackage <strong>dto</strong> al cui interno creeremo una classe <strong>Employee</strong>. Employee rappresente l&#8217;impiegato di un determinato dominio aziendale così caratterizzato.</p>
 </div>
@@ -1201,8 +1187,8 @@ Hello, World!</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_5">1.5</h3>
+<div class="sect3">
+<h4 id="_1_5_employee_list">1.5 Employee List</h4>
 <div class="paragraph">
 <p>Creare un&#8217;api GET /employees che restituisca una lista di impiegati Employee. Output atteso:</p>
 </div>
@@ -1245,22 +1231,29 @@ Hello, World!</code></pre>
 </table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_6">1.6</h3>
+<div class="sect3">
+<h4 id="_1_6_add_employee">1.6 Add Employee</h4>
 <div class="paragraph">
 <p>Creare un&#8217;api POST /employee che aggiunta un impiegato alla lista esistente di impiegati Employee. Il request body dovrà essere in formato JSON l&#8217;API risponde con la lista di impiegati aggiornata.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_7">1.7</h3>
+<div class="sect3">
+<h4 id="_1_7_change_employee">1.7 Change Employee</h4>
 <div class="paragraph">
 <p>Creare un&#8217;api PUT /employee/{matricola} che aggiorni la RAL di un impiegato data la sua matricola, il parametro sarà passato come corpo della richiesta in formato x-www-form-urlencoded</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_8">1.8</h3>
+<div class="sect3">
+<h4 id="_1_8_change_employee_cont">1.8 Change Employee (cont.)</h4>
 <div class="paragraph">
 <p>Arricchire l&#8217;API precedente per modificare qualunque campo dell&#8217;impiegato, esclusa la matricola</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1_9_delete_employee">1.9 Delete Employee</h4>
+<div class="paragraph">
+<p>Creare l&#8217;API DELETE /employee/{matricola} che consente di aggiornare l&#8217;elenco di impiegati in caso di licenziamento o dimissione dell&#8217;impiegato con matricola data.</p>
+</div>
 </div>
 </div>
 </div>
@@ -1290,7 +1283,7 @@ Hello, World!</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-27 10:56:11 +0200
+Last updated 2022-09-27 11:14:04 +0200
 </div>
 </div>
 </body>

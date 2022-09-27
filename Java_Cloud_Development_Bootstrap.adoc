@@ -137,9 +137,9 @@ NOTE: Un archivio *jar* che contenga tutto il necessario senza bisogno di librer
 === 1.2 Il mio primo progetto Spring
 
 
-== Esercizi: Getting Started
+=== Esercizi: Getting Started
 
-=== 1.1
+==== 1.1 Hello World!
 
 Tramite https://start.spring.io/[spring initializr] generare un nuovo progetto Gradle con linguaggio Java 17 e versione Spring 2.7.*.
 
@@ -162,7 +162,7 @@ Hello, World!
 
 La classe Controller dovrà essere contenuto in un nuovo sub_package del medesimo package di DemoApplication.java
 
-=== 1.2
+==== 1.2 Request Params
 
 Modificare l'esercizio precedente affichè l'api risponda dinamicamente al nome dell'utente. Il nome utente potrà essere passato con uno dei seguenti parametri opzionali:
 
@@ -173,11 +173,11 @@ Modificare l'esercizio precedente affichè l'api risponda dinamicamente al nome 
 
 Nel caso in cui nessuno di questi parametri sia passato restituire il valore di default *Hello, World!*
 
-=== 1.3
+==== 1.3 Request Body
 
 Modificare l'API /hello affichè accetti un @RequestBody json con unico parametro *nome* in modo che l'API risponda con il nome dell'utente. L'API Risponderà con verbo POST
 
-=== 1.4
+==== 1.4 DTO Employee
 
 Creare un subpackage *dto* al cui interno creeremo una classe *Employee*. Employee rappresente l'impiegato di un determinato dominio aziendale così caratterizzato.
 
@@ -206,7 +206,7 @@ creare un'API GET /employee che restituisca un impiegato fittizio, la risposta a
 }
 ----
 
-=== 1.5
+==== 1.5 Employee List
 Creare un'api GET /employees che restituisca una lista di impiegati Employee. Output atteso:
 [source, json]
 ----
@@ -237,15 +237,17 @@ Creare un'api GET /employees che restituisca una lista di impiegati Employee. Ou
 Quando avete creato l'oggetto Employee, avete definito i metodi equals ed hashcode? Perchè sono importanti?
 ====
 
-=== 1.6
+==== 1.6 Add Employee
 Creare un'api POST /employee che aggiunta un impiegato alla lista esistente di impiegati Employee. Il request body dovrà essere in formato JSON l'API risponde con la lista di impiegati aggiornata.
 
-=== 1.7
+==== 1.7 Change Employee
 Creare un'api PUT /employee/{matricola} che aggiorni la RAL di un impiegato data la sua matricola, il parametro sarà passato come corpo della richiesta in formato x-www-form-urlencoded
 
-=== 1.8
+==== 1.8 Change Employee (cont.)
 Arricchire l'API precedente per modificare qualunque campo dell'impiegato, esclusa la matricola
 
+==== 1.9 Delete Employee
+Creare l'API DELETE /employee/{matricola} che consente di aggiornare l'elenco di impiegati in caso di licenziamento o dimissione dell'impiegato con matricola data.
 
 == Soluzioni
 
