@@ -216,6 +216,11 @@ IMPORTANT: la naming convention √® molto importante per garantire la leggibilit√
 
 === Esercizi: Getting Started
 
+Prima di cominciare con gli esercizi veri e propri raccomandiamo la creazione di un repository Git dedicato al rilascio degli esercizi del corso. Si consiglia l'utilizzo di:
+
+* https://github.com/[Github]
+* https://about.gitlab.com/[Gitlab]
+
 ==== 1.1 Hello World!
 
 Tramite https://start.spring.io/[spring initializr] generare un nuovo progetto Gradle con linguaggio Java 17 e versione Spring 2.7.*.
