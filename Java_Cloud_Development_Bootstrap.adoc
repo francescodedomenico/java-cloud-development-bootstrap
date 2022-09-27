@@ -134,6 +134,45 @@ Utilizzando i paradigmi forniti dal framework è possibile scrivere, grazie all'
 
 NOTE: Un archivio *jar* che contenga tutto il necessario senza bisogno di librerie esterne è detto *fatjar*. Quando si dispone di tale pacchetto è possibile creare un leggerissimo container per l'esecuzione del servizio contenente soltanto una distro Linux minimale ed una JRE per l'esecuzione dello stesso!
 
+Il framework Spring è costituito da un ecosistema esteso di pacchetti e librerie (spesso frameworks a loro volta). Al fine di gestire tale complesso insieme di software è necessario gestire un progetto Spring tramite un software di distribution management, al momento sono supportati:
+
+* https://maven.apache.org/[Maven]
+* https://gradle.org/[Gradle]
+
+Questo tipo di strumenti ci consentono di risolvere le dipendenze esterne del nostro specifico progetto e garantirne la portabilità. Senza questo tipo di strumenti sarebbe di gran lunga più complesso fornire il nostro software a terzi in quanto costoro dovrebbero avere, nel loro CLASSPATH locale, tutte le librerie necessarie ed importate dal software che abbiamo scritto.
+
+Con una soluzione di questo tipo invece dovremo condividere, oltre al codice sorgente della nostra applicazione, solo uno specifico file chiamato *file di distribuzione*:
+
+* *pom.xml* per Maven
+* *build.gradle* per Gradle
+
+Spring offre un tool web per la generazione iniziale di un progetto Spring boot chiamato https://start.spring.io/[Spring initializr] attraverso il quale è possibile scegliere i parametri iniziali attraverso cui generare il nostro progetto.
+
+image::./img/springinitializr.png[]
+
+Di particolare importanza sono i parametri:
+
+* Group: che determina il package principale della nostra applicazione Spring
+* Artifact: il nome della nostra applicazione(come Java format)
+* Name: Il nome della nostra applicazione(come Display name)
+* Description: Una descrizione della nostra applicazione
+* Package name: tipicamente viene composto automaticamente componendo Group+Artifact - ma è possibile effettuarne l'override
+* Il packaging: il tipo di file di output che ci aspettiamo. Tipicamente le applicazioni full embedded, come quelle spring, vengono pacchettizzate sotto forma di jar comprendente tutte le librerie propedeutiche all'esecuzione del nostro software
+* Java: la versione target di Java
+* Dipendenze: Spring initializr offre un elenco di dipendenze popolari propedeutiche alla generazione di codice automatica, predisposizione controller per API REST, Unit Testing automatico, ecc...
+
+TIP: è possibile aggiungere dipendenze anche dopo la generazione del progetto su spring initializr, semplicemente includendolo nel file di distribuzione come dipendenza
+
+[NOTE] 
+.Dove posso trovare altre dipendenze per il mio software?
+==== 
+Esistono vari motori di ricerca dedicati a questo scopo, uno dei più popolari, vero e proprio punto di riferimento è https://mvnrepository.com/[MVN Repository].
+
+Non solo è possibile generare i tag necessari all'inclusione dei pacchetti nel nostro file di distribuzione, ma vengono anche indicate le vulnerabilità (CVE) delle versioni specifiche di ogni dipendenza.
+====
+
+
+
 === 1.2 Il mio primo progetto Spring
 
 

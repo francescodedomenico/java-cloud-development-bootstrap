@@ -1068,6 +1068,104 @@ Un archivio <strong>jar</strong> che contenga tutto il necessario senza bisogno 
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>Il framework Spring è costituito da un ecosistema esteso di pacchetti e librerie (spesso frameworks a loro volta). Al fine di gestire tale complesso insieme di software è necessario gestire un progetto Spring tramite un software di distribution management, al momento sono supportati:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://maven.apache.org/">Maven</a></p>
+</li>
+<li>
+<p><a href="https://gradle.org/">Gradle</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Questo tipo di strumenti ci consentono di risolvere le dipendenze esterne del nostro specifico progetto e garantirne la portabilità. Senza questo tipo di strumenti sarebbe di gran lunga più complesso fornire il nostro software a terzi in quanto costoro dovrebbero avere, nel loro CLASSPATH locale, tutte le librerie necessarie ed importate dal software che abbiamo scritto.</p>
+</div>
+<div class="paragraph">
+<p>Con una soluzione di questo tipo invece dovremo condividere, oltre al codice sorgente della nostra applicazione, solo uno specifico file chiamato <strong>file di distribuzione</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>pom.xml</strong> per Maven</p>
+</li>
+<li>
+<p><strong>build.gradle</strong> per Gradle</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Spring offre un tool web per la generazione iniziale di un progetto Spring boot chiamato <a href="https://start.spring.io/">Spring initializr</a> attraverso il quale è possibile scegliere i parametri iniziali attraverso cui generare il nostro progetto.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./img/springinitializr.png" alt="springinitializr">
+</div>
+</div>
+<div class="paragraph">
+<p>Di particolare importanza sono i parametri:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Group: che determina il package principale della nostra applicazione Spring</p>
+</li>
+<li>
+<p>Artifact: il nome della nostra applicazione(come Java format)</p>
+</li>
+<li>
+<p>Name: Il nome della nostra applicazione(come Display name)</p>
+</li>
+<li>
+<p>Description: Una descrizione della nostra applicazione</p>
+</li>
+<li>
+<p>Package name: tipicamente viene composto automaticamente componendo Group+Artifact - ma è possibile effettuarne l&#8217;override</p>
+</li>
+<li>
+<p>Il packaging: il tipo di file di output che ci aspettiamo. Tipicamente le applicazioni full embedded, come quelle spring, vengono pacchettizzate sotto forma di jar comprendente tutte le librerie propedeutiche all&#8217;esecuzione del nostro software</p>
+</li>
+<li>
+<p>Java: la versione target di Java</p>
+</li>
+<li>
+<p>Dipendenze: Spring initializr offre un elenco di dipendenze popolari propedeutiche alla generazione di codice automatica, predisposizione controller per API REST, Unit Testing automatico, ecc&#8230;&#8203;</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+è possibile aggiungere dipendenze anche dopo la generazione del progetto su spring initializr, semplicemente includendolo nel file di distribuzione come dipendenza
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="title">Dove posso trovare altre dipendenze per il mio software?</div>
+<div class="paragraph">
+<p>Esistono vari motori di ricerca dedicati a questo scopo, uno dei più popolari, vero e proprio punto di riferimento è <a href="https://mvnrepository.com/">MVN Repository</a>.</p>
+</div>
+<div class="paragraph">
+<p>Non solo è possibile generare i tag necessari all&#8217;inclusione dei pacchetti nel nostro file di distribuzione, ma vengono anche indicate le vulnerabilità (CVE) delle versioni specifiche di ogni dipendenza.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_1_2_il_mio_primo_progetto_spring">1.2 Il mio primo progetto Spring</h3>
@@ -1283,7 +1381,7 @@ Hello, World!</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-27 11:14:04 +0200
+Last updated 2022-09-27 11:39:12 +0200
 </div>
 </div>
 </body>
