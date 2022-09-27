@@ -184,6 +184,8 @@ I file rilevanti per l'utilizzo sono:
 * DemoApplicationTest.java: file di esempio contenente UnitTests
 * pom.xml: file di distribuzione Maven
 
+==== DemoApplication.java
+
 Analizziamo il contenuto di *DemoApplication.java*
 [source, java]
 ----
