@@ -184,6 +184,34 @@ I file rilevanti per l'utilizzo sono:
 * DemoApplicationTest.java: file di esempio contenente UnitTests
 * pom.xml: file di distribuzione Maven
 
+Analizziamo il contenuto di *DemoApplication.java*
+[source, java]
+----
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemoApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DemoApplication.class, args);
+	}
+
+}
+----
+Possiamo innanzitutto notare che il package generato è il medesimo scelto inizialmente su spring initializr Group+Name. Successivamente notiamo il decoratore *@SpringBootApplication*
+
+Questo è un decoratore fondamentale per Spring Boot, in quanto dichiara al framework di inizializzare l'applicazione a partire da questa classe e di inizializzare tutti gli https://www.baeldung.com/spring-bean[*Spring Beans*] a partire dal medesimo package della SpringBootApplication stessa.
+
+Di fatti è buona prassi iniziare a creare sotto packages a partire da *package com.example.demo* in modo da garantirne la loro inizialzzazione. Immaginiamo di voler creare un nuovo client HTTP per accedere al servizio XZY, sarebbe bene collocarlo in un package dedicato all'interno del quale creare una classe per lo stesso client quindi:
+
+1. Creeremo il subpackage com.example.demo.xyz.client
+2. Al suo interno creeremo una classe chiamata XyzClient.java
+
+IMPORTANT: la naming convention è molto importante per garantire la leggibilità del nostro codice, tipicamente in Java si utilizza la notazione https://en.wikipedia.org/wiki/Camel_case[camelCase] per metodi e variabili. Le classi seguono la medesima convenzione ma iniziano per lettera maiuscola.
+
 === Esercizi: Getting Started
 
 ==== 1.1 Hello World!
