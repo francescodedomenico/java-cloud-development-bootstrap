@@ -177,7 +177,7 @@ Una volta generato il progetto su spring initializr avremo una struttura sul fil
 
 image::./img/demoproject.png[]
 
-I file rilevanti per l'utilizzo sono:
+I file rilevanti per l'utilizzo sono: 
 
 * DemoApplication.java: file principale dell'applicazione, entry point di Spring Boot
 * application.properties: file di configurazione in formato properties java
@@ -241,7 +241,7 @@ La classe Controller dovrà essere contenuto in un nuovo sub_package del medesim
 
 ==== 1.2 Request Params
 
-Modificare l'esercizio precedente affichè l'api risponda dinamicamente al nome dell'utente. Il nome utente potrà essere passato con uno dei seguenti parametri opzionali:
+Modificare l'esercizio precedente affinché l'api risponda dinamicamente al nome dell'utente. Il nome utente potrà essere passato con uno dei seguenti parametri opzionali:
 
 * query string parameter *nome*
 * path parameter
@@ -256,7 +256,7 @@ Modificare l'API /hello affichè accetti un @RequestBody json con unico parametr
 
 ==== 1.4 DTO Employee
 
-Creare un subpackage *dto* al cui interno creeremo una classe *Employee*. Employee rappresente l'impiegato di un determinato dominio aziendale così caratterizzato.
+Creare un subpackage *dto* al cui interno creeremo una classe *Employee*. Employee rappresenta l'impiegato di un determinato dominio aziendale così caratterizzato.
 
 * matricola: intero
 * name: testo
@@ -311,7 +311,7 @@ Creare un'api GET /employees che restituisca una lista di impiegati Employee. Ou
 
 [CAUTION]
 ====
-Quando avete creato l'oggetto Employee, avete definito i metodi equals ed hashcode? Perchè sono importanti?
+Quando avete creato l'oggetto Employee, avete definito i metodi equals ed hashcode? Perché sono importanti?
 ====
 
 ==== 1.6 Add Employee
