@@ -96,7 +96,7 @@ video::3c-iBn73dDE[youtube, width=800, height=450]
 
 video::d6WC5n9G_sM[youtube, width=800, height=450]
 
-== Per iniziare
+== Prima di iniziare
 
 Al fine di installare il software necessario, su Windows, si suggerisce l'installazione del package manager *chocolatey*.
 
@@ -120,7 +120,23 @@ Una volta installato Visual Studio Code installare le seguenti estensioni:
 
 
 == Capitolo 1: Che cos'è Spring? E Spring Boot?
-*Spring* nasce come framework per lo sviluppo di applicazioni Server
+=== 1.1 Introduzione
+
+*Spring* nasce come https://it.wikipedia.org/wiki/Framework[framework] per lo sviluppo di applicazioni Server. Al suo interno comprende una collezione di pacchetti nata per facilitare il lavoro degli sviluppatori definendo un pattern preciso di utilizzo.
+Utilizzando i paradigmi forniti dal framework è possibile scrivere, grazie all'uso di https://www.baeldung.com/java-decorator-pattern[decodatori], classi concise nel numero di righe di codice ma ricche di funzionalità, ad esempio:
+
+* Creare classi di configurazioni automaticamente popolate con il contenuto di file properties
+* Effettuare queries su database scrivendo solo la firma di un metodo
+* Creare un'API REST tramite l'uso di un unico decoratore agganciato ad un metodo Java
+* ... e molto altro!
+
+*Spring Boot* è un progetto relativamente più recente, nasce con l'esigenza di avere una soluzione facilmente deployabile, self-contained, di server che erogano un determinato servizio. Questo tipo di approccio si è rivelato particolarmente vincente con il nascere di architetture di calcolatori distribuite e containerizzate in quanto Spring Boot fornisce un eseguibile Java contenente tutti i pacchetti e le librerie, compreso un https://en.wikipedia.org/wiki/Web_server[webserver] embedded, da eseguire.
+
+NOTE: Un archivio *jar* che contenga tutto il necessario senza bisogno di librerie esterne è detto *fatjar*. Quando si dispone di tale pacchetto è possibile creare un leggerissimo container per l'esecuzione del servizio contenente soltanto una distro Linux minimale ed una JRE per l'esecuzione dello stesso!
+
+=== 1.2 Il mio primo progetto Spring
+
+
 == Esercizi: Getting Started
 
 === 1.1
@@ -216,7 +232,7 @@ Creare un'api GET /employees che restituisca una lista di impiegati Employee. Ou
 ]
 ----
 
-[IMPORTANT]
+[CAUTION]
 ====
 Quando avete creato l'oggetto Employee, avete definito i metodi equals ed hashcode? Perchè sono importanti?
 ====
