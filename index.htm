@@ -653,7 +653,7 @@ pre.rouge {
 }
 </style>
 </head>
-<body class="article toc2 toc-left">
+<body class="book toc2 toc-left">
 <div id="header">
 <h1>Java Cloud Development Bootstrap</h1>
 <div class="details">
@@ -1036,7 +1036,7 @@ pre.rouge {
 <h3 id="_1_1_introduzione">1.1 Introduzione</h3>
 <div class="paragraph">
 <p><strong>Spring</strong> nasce come <a href="https://it.wikipedia.org/wiki/Framework">framework</a> per lo sviluppo di applicazioni Server. Al suo interno comprende una collezione di pacchetti nata per facilitare il lavoro degli sviluppatori definendo un pattern preciso di utilizzo.
-Utilizzando i paradigmi forniti dal framework è possibile scrivere, grazie all&#8217;uso di <a href="https://www.baeldung.com/java-decorator-pattern">decodatori</a>, classi concise nel numero di righe di codice ma ricche di funzionalità, ad esempio:</p>
+Utilizzando i paradigmi forniti dal framework è possibile scrivere, grazie all&#8217;uso di <a href="https://www.baeldung.com/java-decorator-pattern">decoratori</a>, classi concise nel numero di righe di codice ma ricche di funzionalità, ad esempio:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1376,16 +1376,12 @@ la naming convention è molto importante per garantire la leggibilità del nostr
 <div class="paragraph">
 <p>Noteremo la solita struttura di progetto ma questa volta il file <strong>pom.xml</strong> avrà una nuova dipendenza</p>
 </div>
-<div class="exampleblock">
+<div class="listingblock">
 <div class="content">
-<div class="literalblock">
-<div class="content">
-<pre>&lt;dependency&gt;
-	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-	&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-&lt;/dependency&gt;</pre>
-</div>
-</div>
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+	<span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+	<span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1409,31 +1405,24 @@ la naming convention è molto importante per garantire la leggibilità del nostr
 <div class="paragraph">
 <p>Il nostro desiderio è creare una API che risponda sul path <strong>/hello</strong> con verbo <strong>HTTP GET</strong> restituendo la stringa "Hello World!".</p>
 </div>
-<div class="exampleblock">
+<div class="listingblock">
 <div class="content">
-<div class="paragraph">
-<p>package com.example.demo.controller;</p>
-</div>
-<div class="paragraph">
-<p>import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;</p>
-</div>
-<div class="paragraph">
-<p>@Controller
-public class HelloWorldController {</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>    @RequestMapping(value = "/hello", method = RequestMethod.GET)
-    @ResponseBody
-    public String helloWorld(){
-        return "Hello World!";
-    }
-}</pre>
-</div>
-</div>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.controller</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Controller</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMethod</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
+
+<span class="nd">@Controller</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldController</span> <span class="o">{</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"/hello"</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="nc">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+    <span class="nd">@ResponseBody</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">helloWorld</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="s">"Hello World!"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1442,13 +1431,9 @@ public class HelloWorldController {</p>
 <div class="paragraph">
 <p>Dalla root del nostro progetto proviamo a farlo partire con il comando:</p>
 </div>
-<div class="exampleblock">
+<div class="listingblock">
 <div class="content">
-<div class="literalblock">
-<div class="content">
-<pre>&gt; mvn spring-boot:run</pre>
-</div>
-</div>
+<pre class="rouge highlight"><code data-lang="shell"><span class="o">&gt;</span> mvn spring-boot:run</code></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -1462,14 +1447,10 @@ public class HelloWorldController {</p>
 <div class="paragraph">
 <p>possiamo a questo punto testare la nostra nuova API</p>
 </div>
-<div class="exampleblock">
+<div class="listingblock">
 <div class="content">
-<div class="literalblock">
-<div class="content">
-<pre>PS C:\&gt; curl http://localhost:8080/hello
-Hello World!</pre>
-</div>
-</div>
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">PS</span><span class="w"> </span><span class="nx">C:\</span><span class="err">&gt;</span><span class="w"> </span><span class="nx">curl</span><span class="w"> </span><span class="nx">http://localhost:8080/hello</span><span class="w">
+</span><span class="n">Hello</span><span class="w"> </span><span class="nx">World</span><span class="o">!</span></code></pre>
 </div>
 </div>
 </div>
@@ -1696,7 +1677,7 @@ Hello World!</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-30 16:10:44 +0200
+Last updated 2022-09-30 16:22:59 +0200
 </div>
 </div>
 </body>

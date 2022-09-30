@@ -3,6 +3,7 @@ Francesco De Domenico
 :toc: left
 :source-highlighter: rouge
 :icons: font
+:doctype: book
 
 == Introduzione
 
@@ -123,7 +124,7 @@ Una volta installato Visual Studio Code installare le seguenti estensioni:
 === 1.1 Introduzione
 
 *Spring* nasce come https://it.wikipedia.org/wiki/Framework[framework] per lo sviluppo di applicazioni Server. Al suo interno comprende una collezione di pacchetti nata per facilitare il lavoro degli sviluppatori definendo un pattern preciso di utilizzo.
-Utilizzando i paradigmi forniti dal framework è possibile scrivere, grazie all'uso di https://www.baeldung.com/java-decorator-pattern[decodatori], classi concise nel numero di righe di codice ma ricche di funzionalità, ad esempio:
+Utilizzando i paradigmi forniti dal framework è possibile scrivere, grazie all'uso di https://www.baeldung.com/java-decorator-pattern[decoratori], classi concise nel numero di righe di codice ma ricche di funzionalità, ad esempio:
 
 * Creare classi di configurazioni automaticamente popolate con il contenuto di file properties
 * Effettuare queries su database scrivendo solo la firma di un metodo
@@ -312,12 +313,12 @@ Noteremo la solita struttura di progetto ma questa volta il file *pom.xml* avrà
 
 
 [source, xml]
-====
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-web</artifactId>
-	</dependency>
-====
+----
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+----
 
 Aggiungere una dipendenza informa la piattaforma di tooling e runtime che sono disponibili nuovi oggetti Java nel nostro CLASS_PATH, quindi saremo in grado di importare tutta una serie di strumenti che ci aiutino nello sviluppo.
 
@@ -334,7 +335,7 @@ All'interno di una classe decorata con @Controller possiamo definire un insieme 
 Il nostro desiderio è creare una API che risponda sul path */hello* con verbo *HTTP GET* restituendo la stringa "Hello World!".
 
 [source, java]
-====
+----
 package com.example.demo.controller;
 
 import org.springframework.stereotype.Controller;
@@ -352,16 +353,16 @@ public class HelloWorldController {
     }
 }
 
-====
+----
 
 La classe è di facile lettura. La notazione @Controller avvisa il framework che questo file contiene informazioni sugli handlers da bindare sul webserver, tuttavia dobbiamo informare il framework sul *path* e sul *verbo HTTP* necessari per invocare l'handler. In questo caso abbiamo utilizzato il decoratore *@RequestMapping* che al suo interno contiene i parametri *value* e *method* che contengono le informazioni necessarie per esporre la nostra API sul webserver embdedded. In ultimo, informiamo il framework che dovrà essere fornito un response body http di tipo *String*
 
 Dalla root del nostro progetto proviamo a farlo partire con il comando:
 
 [source, shell]
-====
-	> mvn spring-boot:run
-====
+----
+> mvn spring-boot:run
+----
 
 image::./img/spring_started.jpg[]
 
@@ -370,10 +371,10 @@ Non appena leggeremo _Started DemoApplication_ vorrà dire che il webserver è i
 possiamo a questo punto testare la nostra nuova API
 
 [source, powershell]
-====
-	PS C:\> curl http://localhost:8080/hello
-	Hello World!
-====
+----
+PS C:\> curl http://localhost:8080/hello
+Hello World!
+----
 
 
 === Esercizi: Getting Started
