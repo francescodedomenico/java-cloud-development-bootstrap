@@ -681,6 +681,7 @@ pre.rouge {
 <li><a href="#_1_2_il_mio_primo_progetto_spring">1.2 Il mio primo progetto Spring</a></li>
 <li><a href="#_1_3_il_mio_primo_controller">1.3 Il mio primo @Controller</a></li>
 <li><a href="#_1_4_passaggio_di_parametri">1.4 Passaggio di parametri</a></li>
+<li><a href="#_1_5_responseentity_entità_custom_e_dto">1.5 ResponseEntity, Entità custom e DTO</a></li>
 <li><a href="#_esercizi_getting_started">Esercizi: Getting Started</a></li>
 </ul>
 </li>
@@ -1505,10 +1506,10 @@ Per fare ciò abbiamo molti modi per farlo, ad esempio:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>E' possibile inviare una HTTP Request con body per verbo GET?</p>
+<p>È possibile inviare una HTTP Request con body per verbo GET?</p>
 </li>
 <li>
-<p>E' corretto farlo?</p>
+<p>È corretto farlo?</p>
 </li>
 </ul>
 </div>
@@ -1562,7 +1563,7 @@ Per fare ciò abbiamo molti modi per farlo, ad esempio:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>E' possibile ottenere il medesimo risultato utilizzando un query string parameter e lasciando il path come impostato inizialmente:</p>
+<p>È possibile ottenere il medesimo risultato utilizzando un query string parameter e lasciando il path come impostato inizialmente:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1596,6 +1597,123 @@ Per fare ciò abbiamo molti modi per farlo, ad esempio:</p>
 </div>
 <div class="paragraph">
 <p>Nella sezione esercizi implementerai l&#8217;API anche con i restanti metodi!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_5_responseentity_entità_custom_e_dto">1.5 ResponseEntity, Entità custom e DTO</h3>
+<div class="paragraph">
+<p>Abbiamo imparato a programmare un controller ed a dichiarare gli handlers per gestire le API, come inviare dati agli handlers e come dichiarare il tipo di risposta che il webserver invierà al chiamante.</p>
+</div>
+<div class="paragraph">
+<p>Nel paragrafo precedente abbiamo lavorato unicamente dei tipi di dati di tipo stringa ma non abbiamo potuto lavorare su l&#8217;oggetto di risposta vero e proprio.</p>
+</div>
+<div class="paragraph">
+<p>Tipicamente ad una chiamata HTTP spetta una risposta articolata da vari elementi come:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>headers di risposta</p>
+</li>
+<li>
+<p>corpo di risposta</p>
+</li>
+<li>
+<p>codice di stato</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Negli esempi precedenti effettuiamo unicamente il ritorno del dato stringa, ma non possiamo controllare appieno la risposta HTTP alla quale siamo interessati, dopotutto stiamo scrivendo un handler che deve fare proprio questo!</p>
+</div>
+<div class="paragraph">
+<p>Fortunatamente Spring ha una classe specifica per manipolare la risposta HTTP chiamata <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html"><strong>ResponseEntity</strong></a>.</p>
+</div>
+<div class="paragraph">
+<p>ResponseEntity fa leva dei Java Generics per dichiarare il tipo di dato che deve custodire e restituire al chiamante. Inoltre possiamo aggiungere a questo oggetto degli headers custom di risposta nonché lo status code di risposta.</p>
+</div>
+<div class="paragraph">
+<p>Vediamo un esempio concreto su come utilizzare la ResponseEntity dunque, riscriviamo il precedente esempio di API helloWorld facendo uso di una ResponseEntity!</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.controller</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestParam</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+<span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldController</span> <span class="o">{</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/hello"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">helloWorld</span><span class="o">(</span>
+        <span class="nd">@RequestParam</span> <span class="nc">String</span> <span class="n">name</span>
+    <span class="o">){</span>
+        <span class="nc">String</span> <span class="n">responseBody</span> <span class="o">=</span> <span class="s">"Hello %s!"</span><span class="o">.</span><span class="na">formatted</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="n">responseBody</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Abbiamo modificato il metodo helloWorld per restituire una ResponseEntity contenente un tipo String dopodiché abbiamo utilizzato il metodo <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html#ok--"><strong>ok()</strong></a> che restituisce un builder per l&#8217;oggetto stesso, che accetta come input un oggetto dello stesso tipo indicato nelle parentesi angolari &lt;&gt;, in questo caso il tipo String che restituisce il messaggio di hello.</p>
+</div>
+<div class="paragraph">
+<p>Consultando la documentazione ufficiale è possibile notare che è presente un builder per ogni stato HTTP più come <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html#notFound--">notFound()</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html#noContent--">noContent()</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html#internalServerError--">internalServerError()</a>.</p>
+</div>
+<div class="paragraph">
+<p>Abbiamo anche la possibilità di definire nella sua interezza la risposta come nell&#8217;esempio riportato:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java">    <span class="kn">package</span> <span class="nn">com.example.demo.controller</span><span class="o">;</span>
+
+
+    <span class="kn">import</span> <span class="nn">org.springframework.http.HttpStatus</span><span class="o">;</span>
+    <span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+    <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+    <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
+    <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+    <span class="nd">@RestController</span>
+    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldController</span> <span class="o">{</span>
+
+        <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/testBadRequest"</span><span class="o">)</span>
+        <span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">testBadRequest</span><span class="o">(){</span>
+            <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="nc">HttpStatus</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">).</span><span class="na">body</span><span class="o">(</span><span class="s">"BAD_REQUEST"</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In questo caso abbiamo inserito uno stato arbitrario nella risposta, utilizzando la classe di Spring <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/HttpStatus.html">HttpStatus</a> per definire il codice http di ritorno. Proviamo ad invocare l&#8217;API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">PS C:<span class="se">\&gt;</span> curl http://localhost:8080/testBadRequest <span class="nt">-v</span>
+<span class="k">*</span>   Trying 127.0.0.1:8080...
+<span class="k">*</span> Connected to localhost <span class="o">(</span>127.0.0.1<span class="o">)</span> port 8080 <span class="o">(</span><span class="c">#0)</span>
+<span class="o">&gt;</span> GET /testBadRequest HTTP/1.1
+<span class="o">&gt;</span> Host: localhost:8080
+<span class="o">&gt;</span> User-Agent: curl/7.83.1
+<span class="o">&gt;</span> Accept: <span class="k">*</span>/<span class="k">*</span>
+<span class="o">&gt;</span>
+<span class="k">*</span> Mark bundle as not supporting multiuse
+&lt; HTTP/1.1 400
+&lt; Content-Type: text/plain<span class="p">;</span><span class="nv">charset</span><span class="o">=</span>UTF-8
+&lt; Content-Length: 11
+&lt; Date: Fri, 30 Sep 2022 19:53:19 GMT
+&lt; Connection: close
+&lt;
+BAD_REQUEST<span class="k">*</span> Closing connection 0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>È possibile notare non solo abbiamo ottenuto come corpo della risposta BAD_REQUEST ma abbiamo anche uno status code 400</p>
 </div>
 </div>
 <div class="sect2">
@@ -1821,7 +1939,7 @@ Per fare ciò abbiamo molti modi per farlo, ad esempio:</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-30 17:28:17 +0200
+Last updated 2022-09-30 22:17:28 +0200
 </div>
 </div>
 </body>

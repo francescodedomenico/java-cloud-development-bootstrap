@@ -399,8 +399,8 @@ Per fare ciò abbiamo molti modi per farlo, ad esempio:
 
 [CAUTION]
 ====
-* E' possibile inviare una HTTP Request con body per verbo GET?
-* E' corretto farlo?
+* È possibile inviare una HTTP Request con body per verbo GET?
+* È corretto farlo?
 ====
 
 Proviamo in prima istanza ad immettere il nostro nome come path parameter, la nostra API dovrà rispondere al path /hello/{name} e restituire al chiamante un corpo della risposta "Hello {name}!".
@@ -439,7 +439,7 @@ Proviamo dunque la nostra API:
 
 image::./img/hello_frenk_path_param.jpg[]
 
-E' possibile ottenere il medesimo risultato utilizzando un query string parameter e lasciando il path come impostato inizialmente:
+È possibile ottenere il medesimo risultato utilizzando un query string parameter e lasciando il path come impostato inizialmente:
 
 [source, java]
 ----
@@ -468,6 +468,104 @@ Il codice è estremamente simile al precedente, tuttavia abbiamo annotato il par
 image::./img/hello_frenk_req_param.jpg[]
 
 Nella sezione esercizi implementerai l'API anche con i restanti metodi!
+
+=== 1.5 ResponseEntity, Entità custom e DTO
+
+Abbiamo imparato a programmare un controller ed a dichiarare gli handlers per gestire le API, come inviare dati agli handlers e come dichiarare il tipo di risposta che il webserver invierà al chiamante.
+
+Nel paragrafo precedente abbiamo lavorato unicamente dei tipi di dati di tipo stringa ma non abbiamo potuto lavorare su l'oggetto di risposta vero e proprio.
+
+Tipicamente ad una chiamata HTTP spetta una risposta articolata da vari elementi come:
+
+* headers di risposta
+* corpo di risposta
+* codice di stato
+
+Negli esempi precedenti effettuiamo unicamente il ritorno del dato stringa, ma non possiamo controllare appieno la risposta HTTP alla quale siamo interessati, dopotutto stiamo scrivendo un handler che deve fare proprio questo!
+
+Fortunatamente Spring ha una classe specifica per manipolare la risposta HTTP chiamata https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html[*ResponseEntity*].
+
+ResponseEntity fa leva dei Java Generics per dichiarare il tipo di dato che deve custodire e restituire al chiamante. Inoltre possiamo aggiungere a questo oggetto degli headers custom di risposta nonché lo status code di risposta.
+
+Vediamo un esempio concreto su come utilizzare la ResponseEntity dunque, riscriviamo il precedente esempio di API helloWorld facendo uso di una ResponseEntity!
+
+[source, java]
+----
+package com.example.demo.controller;
+
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloWorldController {
+    
+    @GetMapping("/hello")
+    public @ResponseBody ResponseEntity<String> helloWorld(
+        @RequestParam String name
+    ){
+        String responseBody = "Hello %s!".formatted(name);
+        return ResponseEntity.ok(responseBody);
+    }
+}
+----
+
+Abbiamo modificato il metodo helloWorld per restituire una ResponseEntity contenente un tipo String dopodiché abbiamo utilizzato il metodo https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html#ok--[*ok()*] che restituisce un builder per l'oggetto stesso, che accetta come input un oggetto dello stesso tipo indicato nelle parentesi angolari <>, in questo caso il tipo String che restituisce il messaggio di hello.
+
+Consultando la documentazione ufficiale è possibile notare che è presente un builder per ogni stato HTTP più come https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html#notFound--[notFound()], https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html#noContent--[noContent()], https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html#internalServerError--[internalServerError()].
+
+Abbiamo anche la possibilità di definire nella sua interezza la risposta come nell'esempio riportato:
+
+[source, java]
+----
+    package com.example.demo.controller;
+
+
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.web.bind.annotation.GetMapping;
+    import org.springframework.web.bind.annotation.ResponseBody;
+    import org.springframework.web.bind.annotation.RestController;
+
+    @RestController
+    public class HelloWorldController {
+        
+        @GetMapping("/testBadRequest")
+        public @ResponseBody ResponseEntity<String> testBadRequest(){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BAD_REQUEST");
+        }
+    }
+----
+
+In questo caso abbiamo inserito uno stato arbitrario nella risposta, utilizzando la classe di Spring https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/HttpStatus.html[HttpStatus] per definire il codice http di ritorno. Proviamo ad invocare l'API:
+
+[source, shell]
+----
+PS C:\> curl http://localhost:8080/testBadRequest -v
+*   Trying 127.0.0.1:8080...
+* Connected to localhost (127.0.0.1) port 8080 (#0)
+> GET /testBadRequest HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.83.1
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 400
+< Content-Type: text/plain;charset=UTF-8
+< Content-Length: 11
+< Date: Fri, 30 Sep 2022 19:53:19 GMT
+< Connection: close
+<
+BAD_REQUEST* Closing connection 0
+
+----
+
+È possibile notare non solo abbiamo ottenuto come corpo della risposta BAD_REQUEST ma abbiamo anche uno status code 400
+
+
 
 === Esercizi: Getting Started
 
