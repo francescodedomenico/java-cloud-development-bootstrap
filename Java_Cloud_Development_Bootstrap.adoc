@@ -120,7 +120,7 @@ Una volta installato Visual Studio Code installare le seguenti estensioni:
 * https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack[Spring Boot Extension Pack]
 
 
-== Capitolo 1: Che cos'è Spring? E Spring Boot?
+== Capitolo 1: Getting Started with Spring
 === 1.1 Introduzione
 
 *Spring* nasce come https://it.wikipedia.org/wiki/Framework[framework] per lo sviluppo di applicazioni Server. Al suo interno comprende una collezione di pacchetti nata per facilitare il lavoro degli sviluppatori definendo un pattern preciso di utilizzo.
@@ -376,6 +376,98 @@ PS C:\> curl http://localhost:8080/hello
 Hello World!
 ----
 
+La nuova prima API funziona!
+
+In questo corso utilizzeremo nella maggior parte dei case una specializzazione della classe @Controller dedicata all'esposizione di API Rest chiamata *@RestController*. Su questo tipo di classe abbiamo dei decoratori specifici che includono nella loro definizione il verbo HTTP necessario per richiamare l'handler, in questo case useremo *GetMapping*.
+
+Prova a riscrivere il controller *HelloWorldController* sostituendo @Controller e @RequestMapping!
+
+=== 1.4 Passaggio di parametri
+
+Nel capitolo precedente abbiamo imparato cos'è un Controller in Spring e come può essere utilizzato per creare un' API Hello World con pochissime righe di codice. L'API che abbiamo creato può fare ben poco se non rispondere in maniera statica allo stesso modo.
+
+Per fortuna il framework Spring ci consente di programmare il nostro webserver in modo sofisticato, supportando una grande varietà di mime-types e codifica dei parametri HTTP passati. Gran parte del lavoro di ricezione e decodifica degli stessi verrà fatto dal framework, a patto di scrivere correttamente i decoratori da utilizzare per annotare i nostri handler.
+
+Ipotizziamo di voler rendere la nostra API /hello un po' più dinamica, come ad esempio rispondere al nostro nome, se passato come parametro.
+Per fare ciò abbiamo molti modi per farlo, ad esempio:
+
+* utilizzare un path parameter
+* utilizzare un query string parameter
+* un header HTTP agganciato alla richiesta
+* un cookie specifico
+* un request body
+
+[CAUTION]
+====
+* E' possibile inviare una HTTP Request con body per verbo GET?
+* E' corretto farlo?
+====
+
+Proviamo in prima istanza ad immettere il nostro nome come path parameter, la nostra API dovrà rispondere al path /hello/{name} e restituire al chiamante un corpo della risposta "Hello {name}!".
+
+[source, java]
+----
+package com.example.demo.controller;
+
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloWorldController {
+    
+    @GetMapping("/hello/{name}")
+    public @ResponseBody String helloWorld(
+        @PathVariable String name
+    ){
+        return "Hello %s!".formatted(name);
+    }
+}
+----
+
+Notiamo innanzitutto che abbiamo sostituito @Controller con @RestController e @RequestMapping con @GetMapping, inoltre abbiamo spostato @ResponseBody immediatamente prima del valore di ritorno del metodo, in modo da rendere immediatamente chiaro ad una prima lettura che tipo di dato possiamo aspettarci dall'handler.
+
+Sul path dell'api abbiamo aggiunto un {name}, allo stesso modo abbiamo aggiunto un parametro di input per il metodo helloWorld, ossia una variabile di tipo String chiamata name.
+
+Spring è riesce in automatico a comprendere che l'entità tra parentesi è collegata alla variabile di input del metodo helloWorld, questa variabile sarà dunque correttamente valorizzata (se passata correttamente all'API) e disponibile all'interno del metodo stesso.
+
+Tramite una semplice String format di Java abbiamo decorato la stringa di ritorno con il nostro nome.
+
+Proviamo dunque la nostra API:
+
+image::./img/hello_frenk_path_param.jpg[]
+
+E' possibile ottenere il medesimo risultato utilizzando un query string parameter e lasciando il path come impostato inizialmente:
+
+[source, java]
+----
+package com.example.demo.controller;
+
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloWorldController {
+    
+    @GetMapping("/hello")
+    public @ResponseBody String helloWorld(
+        @RequestParam String name
+    ){
+        return "Hello %s!".formatted(name);
+    }
+}
+----
+Il codice è estremamente simile al precedente, tuttavia abbiamo annotato il parametro di input del metodo come @RequestParam, pertanto il webserver si attenderà questo parametro come query string paramenter.
+
+
+image::./img/hello_frenk_req_param.jpg[]
+
+Nella sezione esercizi implementerai l'API anche con i restanti metodi!
 
 === Esercizi: Getting Started
 
