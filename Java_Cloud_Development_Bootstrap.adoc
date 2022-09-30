@@ -340,11 +340,13 @@ package com.example.demo.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class HelloWorldController {
     
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    @ResponseBody
     public String helloWorld(){
         return "Hello World!";
     }
@@ -352,7 +354,26 @@ public class HelloWorldController {
 
 ====
 
+La classe è di facile lettura. La notazione @Controller avvisa il framework che questo file contiene informazioni sugli handlers da bindare sul webserver, tuttavia dobbiamo informare il framework sul *path* e sul *verbo HTTP* necessari per invocare l'handler. In questo caso abbiamo utilizzato il decoratore *@RequestMapping* che al suo interno contiene i parametri *value* e *method* che contengono le informazioni necessarie per esporre la nostra API sul webserver embdedded. In ultimo, informiamo il framework che dovrà essere fornito un response body http di tipo *String*
 
+Dalla root del nostro progetto proviamo a farlo partire con il comando:
+
+[source, shell]
+====
+	> mvn spring-boot:run
+====
+
+image::./img/spring_started.jpg[]
+
+Non appena leggeremo _Started DemoApplication_ vorrà dire che il webserver è in ascolto sulla nostra macchina sulla porta 8080 (porta di default).
+
+possiamo a questo punto testare la nostra nuova API
+
+[source, powershell]
+====
+	PS C:\> curl http://localhost:8080/hello
+	Hello World!
+====
 
 
 === Esercizi: Getting Started
@@ -379,8 +400,8 @@ La risposta desiderata sarà:
 
 [source, shell]
 ----
-curl http://localhost:8080/hello
-Hello, World!
+	curl http://localhost:8080/hello
+	Hello, World!
 ----
 
 La classe Controller dovrà essere contenuto in un nuovo sub_package del medesimo package di DemoApplication.java

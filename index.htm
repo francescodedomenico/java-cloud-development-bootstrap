@@ -1417,7 +1417,8 @@ la naming convention è molto importante per garantire la leggibilità del nostr
 <div class="paragraph">
 <p>import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;</p>
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;</p>
 </div>
 <div class="paragraph">
 <p>@Controller
@@ -1426,10 +1427,47 @@ public class HelloWorldController {</p>
 <div class="literalblock">
 <div class="content">
 <pre>    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    @ResponseBody
     public String helloWorld(){
         return "Hello World!";
     }
 }</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>La classe è di facile lettura. La notazione @Controller avvisa il framework che questo file contiene informazioni sugli handlers da bindare sul webserver, tuttavia dobbiamo informare il framework sul <strong>path</strong> e sul <strong>verbo HTTP</strong> necessari per invocare l&#8217;handler. In questo caso abbiamo utilizzato il decoratore <strong>@RequestMapping</strong> che al suo interno contiene i parametri <strong>value</strong> e <strong>method</strong> che contengono le informazioni necessarie per esporre la nostra API sul webserver embdedded. In ultimo, informiamo il framework che dovrà essere fornito un response body http di tipo <strong>String</strong></p>
+</div>
+<div class="paragraph">
+<p>Dalla root del nostro progetto proviamo a farlo partire con il comando:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="literalblock">
+<div class="content">
+<pre>&gt; mvn spring-boot:run</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./img/spring_started.jpg" alt="spring started">
+</div>
+</div>
+<div class="paragraph">
+<p>Non appena leggeremo <em>Started DemoApplication</em> vorrà dire che il webserver è in ascolto sulla nostra macchina sulla porta 8080 (porta di default).</p>
+</div>
+<div class="paragraph">
+<p>possiamo a questo punto testare la nostra nuova API</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="literalblock">
+<div class="content">
+<pre>PS C:\&gt; curl http://localhost:8080/hello
+Hello World!</pre>
 </div>
 </div>
 </div>
@@ -1473,8 +1511,8 @@ public class HelloWorldController {</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">curl http://localhost:8080/hello
-Hello, World!</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">	curl http://localhost:8080/hello
+	Hello, World!</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1658,7 +1696,7 @@ Hello, World!</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-30 15:44:28 +0200
+Last updated 2022-09-30 16:10:44 +0200
 </div>
 </div>
 </body>
