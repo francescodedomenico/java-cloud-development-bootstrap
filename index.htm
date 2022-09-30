@@ -1670,23 +1670,23 @@ Per fare ciò abbiamo molti modi per farlo, ad esempio:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java">    <span class="kn">package</span> <span class="nn">com.example.demo.controller</span><span class="o">;</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.controller</span><span class="o">;</span>
 
 
-    <span class="kn">import</span> <span class="nn">org.springframework.http.HttpStatus</span><span class="o">;</span>
-    <span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
-    <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
-    <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
-    <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.HttpStatus</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
 
-    <span class="nd">@RestController</span>
-    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldController</span> <span class="o">{</span>
+<span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldController</span> <span class="o">{</span>
 
-        <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/testBadRequest"</span><span class="o">)</span>
-        <span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">testBadRequest</span><span class="o">(){</span>
-            <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="nc">HttpStatus</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">).</span><span class="na">body</span><span class="o">(</span><span class="s">"BAD_REQUEST"</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span></code></pre>
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/testBadRequest"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">testBadRequest</span><span class="o">(){</span>
+		<span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="nc">HttpStatus</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">).</span><span class="na">body</span><span class="o">(</span><span class="s">"BAD_REQUEST"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1939,7 +1939,7 @@ BAD_REQUEST<span class="k">*</span> Closing connection 0</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-09-30 22:17:28 +0200
+Last updated 2022-09-30 22:35:56 +0200
 </div>
 </div>
 </body>

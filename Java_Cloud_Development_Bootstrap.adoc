@@ -521,23 +521,23 @@ Abbiamo anche la possibilità di definire nella sua interezza la risposta come n
 
 [source, java]
 ----
-    package com.example.demo.controller;
+package com.example.demo.controller;
 
 
-    import org.springframework.http.HttpStatus;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.web.bind.annotation.GetMapping;
-    import org.springframework.web.bind.annotation.ResponseBody;
-    import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-    @RestController
-    public class HelloWorldController {
-        
-        @GetMapping("/testBadRequest")
-        public @ResponseBody ResponseEntity<String> testBadRequest(){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BAD_REQUEST");
-        }
-    }
+@RestController
+public class HelloWorldController {
+	
+	@GetMapping("/testBadRequest")
+	public @ResponseBody ResponseEntity<String> testBadRequest(){
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BAD_REQUEST");
+	}
+}
 ----
 
 In questo caso abbiamo inserito uno stato arbitrario nella risposta, utilizzando la classe di Spring https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/HttpStatus.html[HttpStatus] per definire il codice http di ritorno. Proviamo ad invocare l'API:
