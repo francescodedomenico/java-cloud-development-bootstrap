@@ -839,6 +839,14 @@ Arricchire l'API precedente per modificare qualunque campo dell'impiegato, esclu
 ==== 1.9 Delete Employee
 Creare l'API DELETE /employee/{matricola} che consente di aggiornare l'elenco di impiegati in caso di licenziamento o dimissione dell'impiegato con matricola data.
 
+== Capitolo 2: La logica di business e come implementarla
+
+=== @Service + @Autowired
+
+=== @Component
+
+=== @Configuration
+
 == Soluzioni
 
 [source, java]
