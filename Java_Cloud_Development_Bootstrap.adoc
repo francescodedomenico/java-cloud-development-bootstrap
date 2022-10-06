@@ -114,6 +114,16 @@ Una volta installato il package manager potrà essere utilizzato per installare 
 ----
 choco install vscode temurin17 maven gradle curl git postman chocolateygui
 ----
+
+Consigliamo inoltre di avere, su sistemi Windows, degli ambienti shell aggiornati:
+
+[source, powershell]
+----
+choco install powershell-core microsoft-windows-terminal 
+----
+
+per chi utilizzasse shell *nix non ci sono problemi di compatibilità con gli esempi riportati in questa guida, gli utenti windows possono usufruire di un environment linux attraverso la piattaforma Windows Subsystem for Linux. Potete consultare la guida per attivarlo al seguente https://learn.microsoft.com/it-it/training/modules/get-started-with-windows-subsystem-for-linux/[link].
+
 Una volta installato Visual Studio Code installare le seguenti estensioni:
 
 * https://marketplace.visualstudio.com/items?itemName=redhat.java[Language support for Java ™ for Visual Studio Code]
@@ -563,8 +573,13 @@ BAD_REQUEST* Closing connection 0
 
 ----
 
-È possibile notare non solo abbiamo ottenuto come corpo della risposta BAD_REQUEST ma abbiamo anche uno status code 400
+È possibile notare non solo abbiamo ottenuto come corpo della risposta BAD_REQUEST ma abbiamo anche uno status code 400.
 
+Dovrebbe essere chiaro che il paradigma REST si basa su un dialogo fatto tra client e server, di richieste e risposte.
+
+Attraverso una successione di chiamate REST un client può ottenere la fotografia di un sistema, modificane lo stato oppure avviare un processo asincrono (il cui stato può essere verificato sempre tramite chiamate REST).
+
+È possibile veicolare le informazioni sotto forma di risposta in molteplici formati. Uno dei formati più comuni di interscambio è il formato JSON.
 
 
 === Esercizi: Getting Started
@@ -573,6 +588,8 @@ Prima di cominciare con gli esercizi veri e propri raccomandiamo la creazione di
 
 * https://github.com/[Github]
 * https://about.gitlab.com/[Gitlab]
+
+Si consiglia di prendere familiarità con i seguenti comandi al fine di poter
 
 ==== 1.1 Hello World!
 
