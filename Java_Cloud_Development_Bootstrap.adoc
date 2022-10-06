@@ -579,7 +579,145 @@ Dovrebbe essere chiaro che il paradigma REST si basa su un dialogo fatto tra cli
 
 Attraverso una successione di chiamate REST un client può ottenere la fotografia di un sistema, modificane lo stato oppure avviare un processo asincrono (il cui stato può essere verificato sempre tramite chiamate REST).
 
-È possibile veicolare le informazioni sotto forma di risposta in molteplici formati. Uno dei formati più comuni di interscambio è il formato JSON.
+È possibile veicolare le informazioni sotto forma di risposta in molteplici formati. Uno dei formati più comuni di interscambio è il formato JSON. Spring Boot, in assenza di indicazioni diverse, provvederà a leggere e rispondere alle nostre richieste proprio con il formato JSON!
+
+Al fine di rendere possibile la lettura da parte di Spring Boot della nostra richiesta il framework si appoggia ad una libreria di serializzazione/deserializzazione chiamata https://github.com/FasterXML/jackson[Jackson].
+
+Abbiamo menzionato serializzazione e deserializzazione, ma cosa sono esattamente?
+
+Quando inviamo un @RequestBody utilizzando una chiamata cURL oppure Postman stiamo in realtà trasferendo una sequenza (o serie) di bytes. Questo processo di trasformazione da oggetto a serie di bytes è detto *serializzazione*.
+
+SpringBoot, quando riceve la chiamata, prima di trasferire il controllo al Controller (scusate il gioco di parole), tenta di effettuare il processo inverso, ossia trasformare la sequenza o serie di bytes in un oggetto intellegibile Java. Questo processo è appunto detto *deserializzazione*.
+
+Possiamo quindi passare a SpringBoot oggetti molto sofisticati come @RequestBody, se abbiamo fornito al framework informazioni adeguate potremo utilizzare la richiesta nel nostro codice ed adoperarla in maniera semplice in quanto verrà costruito un vero e proprio oggetto Java! Potremmo quindi utilizzare funzionalità come i Getters ed i Setters per ogni campo, definire all'interno della medesima classe altre classi innestate, utilizzare funzionalità come equals ed hashcode per poter organizzare il nostro oggetto in strutture dati complesse oppure memorizzare la richiesta in un database.
+
+Tipicamente Spring Boot si aspetta che il decoratore @RequestBody sia seguito da una classe Java che rappresenti l'oggetto che ci aspettiamo di ricevere.
+
+Modifichiamo l'API HelloWorld vista in precedenza in modo da ricevere in @RequestBody un oggetto che chiameremo HelloWorldDTO.
+
+Ma che cosa è un DTO? E' l'acronimo di https://en.wikipedia.org/wiki/Data_transfer_object[Data transfer object] ed è, in semplici parole, un _contenitore_ di dati.
+
+Come questo contenitore debba essere letto, utilizzato e trasformato sarà poi compito della nostra applicazione, ma a tutti gli effetti abbiamo bisogno di un _wrapper_ che contenga le informazioni contenute nella richiesta in modo da poter essere lette.
+
+Riprendiamo l'esercizio precedente e creiamo un subpackage *dto*, creiamo il file HelloWorldDTO.java al suo interno:
+
+[source, java]
+----
+package com.example.demo.dto;
+
+import java.util.Objects;
+
+public class HelloWorldDTO {
+    private String nome;
+
+    public HelloWorldDTO() {
+        super();
+    }
+
+    public HelloWorldDTO(String nome) {
+        this.nome = nome;
+    }
+
+    public String getNome() {
+        return this.nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof HelloWorldDTO)) {
+            return false;
+        }
+        HelloWorldDTO helloWorldDTO = (HelloWorldDTO) o;
+        return Objects.equals(nome, helloWorldDTO.nome);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(nome);
+    }
+
+}
+----
+
+Un oggetto java abbastanza semplice, contiene un unico campo privato *nome* e due costruttori, con e senza argomenti di ingresso. Per accedere ai campi dell'oggetto avremo dei getter e dei setter dedicati. Non ci dimentichiamo di implementare gli opportuni metodi *equals* ed *hashCode*, in questo modo abbiamo la garanzia di poter sempre confrontare e gestire in opportune strutture dati gli oggetti della nostra applicazione.
+
+Vediamo ora il controller modificato:
+
+[source, java]
+----
+package com.example.demo.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.dto.HelloWorldDTO;
+
+@RestController
+public class HelloWorldController {
+
+    @PostMapping("/hello")
+    public @ResponseBody ResponseEntity<String> helloWorld(
+            @RequestBody HelloWorldDTO helloWorldDTO) {
+        String response = String.format("Hello %s!", helloWorldDTO.getNome());
+        return ResponseEntity.ok(response);
+    }
+}
+----
+
+proviamo ad invocare l'API:
+
+[source, powershell]
+----
+PS> curl -X POST localhost:8080/hello -d '{\"nome\":\"Francesco\"}' -H 'Content-Type: application/json'
+Hello Francesco!
+----
+
+Utilizzando Powershell è necessario aggiungere il carattere *\* per effettuare l'escaping del doppio apice (") utilizzando una shell linux possiamo semplicemente digitare:
+
+[source, shell]
+----
+$ curl -X POST localhost:8080/hello -d '{"nome":"francesco"}' -H 'Content-Type: application/json'
+Hello francesco!
+----
+
+Possiamo notare inoltre l'aggiunta di un header HTTP: *Content-Type: application/json*. Questo header ha fondamentale importanza per il nostro server in quanto fornisce una chiave di lettura per la serie di bytes presenti nel corpo della richiesta HTTP (bisogna effettuare la *deserialzizazione* del corpo della richiesta!). Cosa accadrebbe se non lo inviassimo?
+
+[source, shell]
+----
+$ curl -X POST localhost:8080/hello -d '{"nome":"francesco"}' -v
+*   Trying 127.0.0.1:8080...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8080 (#0)
+> POST /hello HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.68.0
+> Accept: */*
+> Content-Length: 20
+> Content-Type: application/x-www-form-urlencoded
+>
+* upload completely sent off: 20 out of 20 bytes
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 415
+< Accept: application/json, application/*+json
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Date: Thu, 06 Oct 2022 17:08:20 GMT
+<
+* Connection #0 to host localhost left intact
+{"timestamp":"2022-10-06T17:08:20.010+00:00","status":415,"error":"Unsupported Media Type","path":"/hello"}
+----
+
+Come possiamo notare cURL in assenza di un'indicazione differente imposta il Content-Type come: *application/x-www-form-urlencoded*. Non avendo istruito il nostro handler all'interno della classe @Controller ad attendersi questo tipo di Content-Type il server ci risponderà che non saprà come gestirlo.
+
 
 
 === Esercizi: Getting Started

@@ -1733,7 +1733,160 @@ BAD_REQUEST<span class="k">*</span> Closing connection 0</code></pre>
 <p>Attraverso una successione di chiamate REST un client può ottenere la fotografia di un sistema, modificane lo stato oppure avviare un processo asincrono (il cui stato può essere verificato sempre tramite chiamate REST).</p>
 </div>
 <div class="paragraph">
-<p>È possibile veicolare le informazioni sotto forma di risposta in molteplici formati. Uno dei formati più comuni di interscambio è il formato JSON.</p>
+<p>È possibile veicolare le informazioni sotto forma di risposta in molteplici formati. Uno dei formati più comuni di interscambio è il formato JSON. Spring Boot, in assenza di indicazioni diverse, provvederà a leggere e rispondere alle nostre richieste proprio con il formato JSON!</p>
+</div>
+<div class="paragraph">
+<p>Al fine di rendere possibile la lettura da parte di Spring Boot della nostra richiesta il framework si appoggia ad una libreria di serializzazione/deserializzazione chiamata <a href="https://github.com/FasterXML/jackson">Jackson</a>.</p>
+</div>
+<div class="paragraph">
+<p>Abbiamo menzionato serializzazione e deserializzazione, ma cosa sono esattamente?</p>
+</div>
+<div class="paragraph">
+<p>Quando inviamo un @RequestBody utilizzando una chiamata cURL oppure Postman stiamo in realtà trasferendo una sequenza (o serie) di bytes. Questo processo di trasformazione da oggetto a serie di bytes è detto <strong>serializzazione</strong>.</p>
+</div>
+<div class="paragraph">
+<p>SpringBoot, quando riceve la chiamata, prima di trasferire il controllo al Controller (scusate il gioco di parole), tenta di effettuare il processo inverso, ossia trasformare la sequenza o serie di bytes in un oggetto intellegibile Java. Questo processo è appunto detto <strong>deserializzazione</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Possiamo quindi passare a SpringBoot oggetti molto sofisticati come @RequestBody, se abbiamo fornito al framework informazioni adeguate potremo utilizzare la richiesta nel nostro codice ed adoperarla in maniera semplice in quanto verrà costruito un vero e proprio oggetto Java! Potremmo quindi utilizzare funzionalità come i Getters ed i Setters per ogni campo, definire all&#8217;interno della medesima classe altre classi innestate, utilizzare funzionalità come equals ed hashcode per poter organizzare il nostro oggetto in strutture dati complesse oppure memorizzare la richiesta in un database.</p>
+</div>
+<div class="paragraph">
+<p>Tipicamente Spring Boot si aspetta che il decoratore @RequestBody sia seguito da una classe Java che rappresenti l&#8217;oggetto che ci aspettiamo di ricevere.</p>
+</div>
+<div class="paragraph">
+<p>Modifichiamo l&#8217;API HelloWorld vista in precedenza in modo da ricevere in @RequestBody un oggetto che chiameremo HelloWorldDTO.</p>
+</div>
+<div class="paragraph">
+<p>Ma che cosa è un DTO? E' l&#8217;acronimo di <a href="https://en.wikipedia.org/wiki/Data_transfer_object">Data transfer object</a> ed è, in semplici parole, un <em>contenitore</em> di dati.</p>
+</div>
+<div class="paragraph">
+<p>Come questo contenitore debba essere letto, utilizzato e trasformato sarà poi compito della nostra applicazione, ma a tutti gli effetti abbiamo bisogno di un <em>wrapper</em> che contenga le informazioni contenute nella richiesta in modo da poter essere lette.</p>
+</div>
+<div class="paragraph">
+<p>Riprendiamo l&#8217;esercizio precedente e creiamo un subpackage <strong>dto</strong>, creiamo il file HelloWorldDTO.java al suo interno:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.dto</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Objects</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldDTO</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">nome</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">HelloWorldDTO</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">HelloWorldDTO</span><span class="o">(</span><span class="nc">String</span> <span class="n">nome</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">nome</span> <span class="o">=</span> <span class="n">nome</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getNome</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">nome</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setNome</span><span class="o">(</span><span class="nc">String</span> <span class="n">nome</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">nome</span> <span class="o">=</span> <span class="n">nome</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="o">==</span> <span class="k">this</span><span class="o">)</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(!(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="nc">HelloWorldDTO</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">HelloWorldDTO</span> <span class="n">helloWorldDTO</span> <span class="o">=</span> <span class="o">(</span><span class="nc">HelloWorldDTO</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
+        <span class="k">return</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">nome</span><span class="o">,</span> <span class="n">helloWorldDTO</span><span class="o">.</span><span class="na">nome</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">hashCode</span><span class="o">(</span><span class="n">nome</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Un oggetto java abbastanza semplice, contiene un unico campo privato <strong>nome</strong> e due costruttori, con e senza argomenti di ingresso. Per accedere ai campi dell&#8217;oggetto avremo dei getter e dei setter dedicati. Non ci dimentichiamo di implementare gli opportuni metodi <strong>equals</strong> ed <strong>hashCode</strong>, in questo modo abbiamo la garanzia di poter sempre confrontare e gestire in opportune strutture dati gli oggetti della nostra applicazione.</p>
+</div>
+<div class="paragraph">
+<p>Vediamo ora il controller modificato:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.controller</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestBody</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.example.demo.dto.HelloWorldDTO</span><span class="o">;</span>
+
+<span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldController</span> <span class="o">{</span>
+
+    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/hello"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">helloWorld</span><span class="o">(</span>
+            <span class="nd">@RequestBody</span> <span class="nc">HelloWorldDTO</span> <span class="n">helloWorldDTO</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">response</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"Hello %s!"</span><span class="o">,</span> <span class="n">helloWorldDTO</span><span class="o">.</span><span class="na">getNome</span><span class="o">());</span>
+        <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="n">response</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>proviamo ad invocare l&#8217;API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">PS</span><span class="err">&gt;</span><span class="w"> </span><span class="nx">curl</span><span class="w"> </span><span class="nt">-X</span><span class="w"> </span><span class="nx">POST</span><span class="w"> </span><span class="nx">localhost:8080/hello</span><span class="w"> </span><span class="nt">-d</span><span class="w"> </span><span class="s1">'{\"nome\":\"Francesco\"}'</span><span class="w"> </span><span class="nt">-H</span><span class="w"> </span><span class="s1">'Content-Type: application/json'</span><span class="w">
+</span><span class="n">Hello</span><span class="w"> </span><span class="nx">Francesco</span><span class="o">!</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Utilizzando Powershell è necessario aggiungere il carattere <strong>\</strong> per effettuare l&#8217;escaping del doppio apice (") utilizzando una shell linux possiamo semplicemente digitare:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nv">$ </span>curl <span class="nt">-X</span> POST localhost:8080/hello <span class="nt">-d</span> <span class="s1">'{"nome":"francesco"}'</span> <span class="nt">-H</span> <span class="s1">'Content-Type: application/json'</span>
+Hello francesco!</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Possiamo notare inoltre l&#8217;aggiunta di un header HTTP: <strong>Content-Type: application/json</strong>. Questo header ha fondamentale importanza per il nostro server in quanto fornisce una chiave di lettura per la serie di bytes presenti nel corpo della richiesta HTTP (bisogna effettuare la <strong>deserialzizazione</strong> del corpo della richiesta!). Cosa accadrebbe se non lo inviassimo?</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nv">$ </span>curl <span class="nt">-X</span> POST localhost:8080/hello <span class="nt">-d</span> <span class="s1">'{"nome":"francesco"}'</span> <span class="nt">-v</span>
+<span class="k">*</span>   Trying 127.0.0.1:8080...
+<span class="k">*</span> TCP_NODELAY <span class="nb">set</span>
+<span class="k">*</span> Connected to localhost <span class="o">(</span>127.0.0.1<span class="o">)</span> port 8080 <span class="o">(</span><span class="c">#0)</span>
+<span class="o">&gt;</span> POST /hello HTTP/1.1
+<span class="o">&gt;</span> Host: localhost:8080
+<span class="o">&gt;</span> User-Agent: curl/7.68.0
+<span class="o">&gt;</span> Accept: <span class="k">*</span>/<span class="k">*</span>
+<span class="o">&gt;</span> Content-Length: 20
+<span class="o">&gt;</span> Content-Type: application/x-www-form-urlencoded
+<span class="o">&gt;</span>
+<span class="k">*</span> upload completely sent off: 20 out of 20 bytes
+<span class="k">*</span> Mark bundle as not supporting multiuse
+&lt; HTTP/1.1 415
+&lt; Accept: application/json, application/<span class="k">*</span>+json
+&lt; Content-Type: application/json
+&lt; Transfer-Encoding: chunked
+&lt; Date: Thu, 06 Oct 2022 17:08:20 GMT
+&lt;
+<span class="k">*</span> Connection <span class="c">#0 to host localhost left intact</span>
+<span class="o">{</span><span class="s2">"timestamp"</span>:<span class="s2">"2022-10-06T17:08:20.010+00:00"</span>,<span class="s2">"status"</span>:415,<span class="s2">"error"</span>:<span class="s2">"Unsupported Media Type"</span>,<span class="s2">"path"</span>:<span class="s2">"/hello"</span><span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Come possiamo notare cURL in assenza di un&#8217;indicazione differente imposta il Content-Type come: <strong>application/x-www-form-urlencoded</strong>. Non avendo istruito il nostro handler all&#8217;interno della classe @Controller ad attendersi questo tipo di Content-Type il server ci risponderà che non saprà come gestirlo.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1962,7 +2115,7 @@ BAD_REQUEST<span class="k">*</span> Closing connection 0</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-06 12:27:57 +0200
+Last updated 2022-10-06 19:10:03 +0200
 </div>
 </div>
 </body>
