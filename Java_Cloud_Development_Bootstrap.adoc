@@ -595,7 +595,7 @@ Tipicamente Spring Boot si aspetta che il decoratore @RequestBody sia seguito da
 
 Modifichiamo l'API HelloWorld vista in precedenza in modo da ricevere in @RequestBody un oggetto che chiameremo HelloWorldDTO.
 
-Ma che cosa è un DTO? E' l'acronimo di https://en.wikipedia.org/wiki/Data_transfer_object[Data transfer object] ed è, in semplici parole, un _contenitore_ di dati.
+Ma che cosa è un DTO? È l'acronimo di https://en.wikipedia.org/wiki/Data_transfer_object[Data transfer object] ed è, in semplici parole, un _contenitore_ di dati.
 
 Come questo contenitore debba essere letto, utilizzato e trasformato sarà poi compito della nostra applicazione, ma a tutti gli effetti abbiamo bisogno di un _wrapper_ che contenga le informazioni contenute nella richiesta in modo da poter essere lette.
 
@@ -657,7 +657,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.FRestController;
 
 import com.example.demo.dto.HelloWorldDTO;
 
@@ -689,7 +689,7 @@ $ curl -X POST localhost:8080/hello -d '{"nome":"francesco"}' -H 'Content-Type: 
 Hello francesco!
 ----
 
-Possiamo notare inoltre l'aggiunta di un header HTTP: *Content-Type: application/json*. Questo header ha fondamentale importanza per il nostro server in quanto fornisce una chiave di lettura per la serie di bytes presenti nel corpo della richiesta HTTP (bisogna effettuare la *deserialzizazione* del corpo della richiesta!). Cosa accadrebbe se non lo inviassimo?
+Possiamo notare inoltre l'aggiunta di un header HTTP: *Content-Type: application/json*. Questo header ha fondamentale importanza per il nostro server in quanto fornisce una chiave di lettura per la serie di bytes presenti nel corpo della richiesta HTTP (bisogna effettuare la *deserializzazione* del corpo della richiesta!). Cosa accadrebbe se non lo inviassimo?
 
 [source, shell]
 ----
@@ -841,9 +841,84 @@ Creare l'API DELETE /employee/{matricola} che consente di aggiornare l'elenco di
 
 == Capitolo 2: La logica di business e come implementarla
 
-Abbiamo fornito una prima introduzione sul mondo Spring e Springboot, abbiamo implementato i primi controller e scoperto come comunica
+Abbiamo fornito una prima introduzione sul mondo Spring e Springboot, abbiamo implementato i primi controller e scoperto come comunica con i clients. Per costruire servizi sofisticati tuttavia questo non basta. Un @Controller infatti deve descrivere l'interfaccia tra il webserver e l'applicazione vera e propria. Il modello di programmazione ad oggetti scoraggia il popolamento di interfacce con complesse logiche di business/applicative.
+
+La ragione non è realmente funzionale, volendo potremmo scrivere una sofisticatissima applicazione in un unico file e funzionerebbe esattamente come un'applicazione ben progettata, ossia con una rigorosa suddivisione in packages, interfacce chiare ed implementazioni che rispettino il dominio di interesse.
+
+La reale ragione consiste nella leggibilità, manutenibilità ed estensibilità del software che stiamo scrivendo.
+
+Un software ben scritto ci consente inoltre di ben comprendere le eventuali anomalia che si presentano durante la sua esecuzione, agevolando non poco le procedure di troubleshooting.
+
+Il framework Spring incoraggia questo approccio fornendo allo sviluppatore dei beans speciali dedicati a compiti specifici.
 
 === @Service + @Autowired
+
+Come abbiamo accennato in precedenza, pur essendo sintatticamente corretto, implementare un flusso complicato all'interno di un metodo di un @Controller ne riduce la leggibilità, ed essendo un elemento di interfaccia sarebbe bene tenerlo come mera classe di presentation. 
+
+Spring ha un @Component speciale chiamato @Service. Questo componente è tipicamente quello che ospita la logica di business di un determinato dominio.
+
+Riprendendo il lavoro del capitolo 1 possiamo creare un *HelloWorldService* con un metodo *sayHello* che, dato un DTO HelloWorldDTO restituisca un saluto con il nostro nome.
+
+Vediamo la classe @Service:
+
+[source,java]
+----
+package com.example.demo.service;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.HelloWorldDTO;
+
+@Service
+public class HelloWorldService {
+    public String sayHello(HelloWorldDTO helloDto){
+        return String.format("Hello %s!",helloDto.getNome());
+    }
+}
+
+----
+
+Sembrerebbe una semplicissima classe Java con un metodo d'istanza che restituisca l'hello world, con qualche piccola eccezione. Innanzitutto l'abbiamo annotata con il decoratore @Service. Avendo inserito questa classe all'interno di un subpackage dell'applicazione principale, Spring Boot inizializzerà questa classe ed i suoi beans all'interno. Notiamo inoltre che non abbiamo dichiarato il costruttore di default, la sua inizializzazione avverrà durante l'avvio del software per via del fatto che @Service è una specializzazione di @Component, e quindi sarà soggetto alle logiche di inizializzazione e bean injection di Spring.
+
+Abbiamo creato dunque la nostra classe di servizio, ma come facciamo a richiamarla all'interno del nostro controller? Ciò che è necessario fare è in qualche modo _collegare_ le classi @Controller e @Service - ciò è possibile trame un @Decoratore particolare detto *Autowired*. Vediamo come potrebbe essere riscritto l'HelloWorldController tramite questa annotazione:
+
+[source, java]
+----
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.dto.HelloWorldDTO;
+import com.example.demo.service.HelloWorldService;
+
+@RestController
+public class HelloWorldController {
+    @Autowired
+    HelloWorldService helloWorldService;
+
+    @PostMapping("/hello")
+    public @ResponseBody ResponseEntity<String> helloWorld(
+            @RequestBody HelloWorldDTO helloWorldDTO) {
+        return ResponseEntity.ok(helloWorldService.sayHello(helloWorldDTO));
+    }
+}
+----
+
+Nuovamente notiamo che non vi è una inizializzazione esplicità dell'oggetto Java HelloWorldService, l'oggetto è stato inizializzato a runtime da Spring e collegato al nostro @RestController tramite la decorazione @Autowired. Per questa ragione, quando invocheremo il metodo di istanza *sayHello*, non riceveremo un NullPointerException ma otterremo il messaggio che ci aspettiamo. Effettuiamo ora il test:
+
+[source, shell]
+----
+$ curl -X POST http://localhost:8080/hello -d '{"nome": "Francesco"}' -H 'Content-Type:application/json'
+Hello Francesco!
+----
+
+
+
 
 === @Component
 

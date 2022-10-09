@@ -1764,7 +1764,7 @@ BAD_REQUEST<span class="k">*</span> Closing connection 0</code></pre>
 <p>Modifichiamo l&#8217;API HelloWorld vista in precedenza in modo da ricevere in @RequestBody un oggetto che chiameremo HelloWorldDTO.</p>
 </div>
 <div class="paragraph">
-<p>Ma che cosa è un DTO? E' l&#8217;acronimo di <a href="https://en.wikipedia.org/wiki/Data_transfer_object">Data transfer object</a> ed è, in semplici parole, un <em>contenitore</em> di dati.</p>
+<p>Ma che cosa è un DTO? È l&#8217;acronimo di <a href="https://en.wikipedia.org/wiki/Data_transfer_object">Data transfer object</a> ed è, in semplici parole, un <em>contenitore</em> di dati.</p>
 </div>
 <div class="paragraph">
 <p>Come questo contenitore debba essere letto, utilizzato e trasformato sarà poi compito della nostra applicazione, ma a tutti gli effetti abbiamo bisogno di un <em>wrapper</em> che contenga le informazioni contenute nella richiesta in modo da poter essere lette.</p>
@@ -1830,7 +1830,7 @@ BAD_REQUEST<span class="k">*</span> Closing connection 0</code></pre>
 <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestBody</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.FRestController</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">com.example.demo.dto.HelloWorldDTO</span><span class="o">;</span>
 
@@ -1865,7 +1865,7 @@ Hello francesco!</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Possiamo notare inoltre l&#8217;aggiunta di un header HTTP: <strong>Content-Type: application/json</strong>. Questo header ha fondamentale importanza per il nostro server in quanto fornisce una chiave di lettura per la serie di bytes presenti nel corpo della richiesta HTTP (bisogna effettuare la <strong>deserialzizazione</strong> del corpo della richiesta!). Cosa accadrebbe se non lo inviassimo?</p>
+<p>Possiamo notare inoltre l&#8217;aggiunta di un header HTTP: <strong>Content-Type: application/json</strong>. Questo header ha fondamentale importanza per il nostro server in quanto fornisce una chiave di lettura per la serie di bytes presenti nel corpo della richiesta HTTP (bisogna effettuare la <strong>deserializzazione</strong> del corpo della richiesta!). Cosa accadrebbe se non lo inviassimo?</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2101,11 +2101,92 @@ Hello francesco!</code></pre>
 <h2 id="_capitolo_2_la_logica_di_business_e_come_implementarla">Capitolo 2: La logica di business e come implementarla</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Abbiamo fornito una prima introduzione sul mondo Spring e Springboot, abbiamo implementato i primi controller e scoperto come comunica</p>
+<p>Abbiamo fornito una prima introduzione sul mondo Spring e Springboot, abbiamo implementato i primi controller e scoperto come comunica con i clients. Per costruire servizi sofisticati tuttavia questo non basta. Un @Controller infatti deve descrivere l&#8217;interfaccia tra il webserver e l&#8217;applicazione vera e propria. Il modello di programmazione ad oggetti scoraggia il popolamento di interfacce con complesse logiche di business/applicative.</p>
+</div>
+<div class="paragraph">
+<p>La ragione non è realmente funzionale, volendo potremmo scrivere una sofisticatissima applicazione in un unico file e funzionerebbe esattamente come un&#8217;applicazione ben progettata, ossia con una rigorosa suddivisione in packages, interfacce chiare ed implementazioni che rispettino il dominio di interesse.</p>
+</div>
+<div class="paragraph">
+<p>La reale ragione consiste nella leggibilità, manutenibilità ed estensibilità del software che stiamo scrivendo.</p>
+</div>
+<div class="paragraph">
+<p>Un software ben scritto ci consente inoltre di ben comprendere le eventuali anomalia che si presentano durante la sua esecuzione, agevolando non poco le procedure di troubleshooting.</p>
+</div>
+<div class="paragraph">
+<p>Il framework Spring incoraggia questo approccio fornendo allo sviluppatore dei beans speciali dedicati a compiti specifici.</p>
 </div>
 <div class="sect2">
 <h3 id="_service_autowired">@Service + @Autowired</h3>
+<div class="paragraph">
+<p>Come abbiamo accennato in precedenza, pur essendo sintatticamente corretto, implementare un flusso complicato all&#8217;interno di un metodo di un @Controller ne riduce la leggibilità, ed essendo un elemento di interfaccia sarebbe bene tenerlo come mera classe di presentation.</p>
+</div>
+<div class="paragraph">
+<p>Spring ha un @Component speciale chiamato @Service. Questo componente è tipicamente quello che ospita la logica di business di un determinato dominio.</p>
+</div>
+<div class="paragraph">
+<p>Riprendendo il lavoro del capitolo 1 possiamo creare un <strong>HelloWorldService</strong> con un metodo <strong>sayHello</strong> che, dato un DTO HelloWorldDTO restituisca un saluto con il nostro nome.</p>
+</div>
+<div class="paragraph">
+<p>Vediamo la classe @Service:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.service</span><span class="o">;</span>
 
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.example.demo.dto.HelloWorldDTO</span><span class="o">;</span>
+
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldService</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">sayHello</span><span class="o">(</span><span class="nc">HelloWorldDTO</span> <span class="n">helloDto</span><span class="o">){</span>
+        <span class="k">return</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"Hello %s!"</span><span class="o">,</span><span class="n">helloDto</span><span class="o">.</span><span class="na">getNome</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sembrerebbe una semplicissima classe Java con un metodo d&#8217;istanza che restituisca l&#8217;hello world, con qualche piccola eccezione. Innanzitutto l&#8217;abbiamo annotata con il decoratore @Service. Avendo inserito questa classe all&#8217;interno di un subpackage dell&#8217;applicazione principale, Spring Boot inizializzerà questa classe ed i suoi beans all&#8217;interno. Notiamo inoltre che non abbiamo dichiarato il costruttore di default, la sua inizializzazione avverrà durante l&#8217;avvio del software per via del fatto che @Service è una specializzazione di @Component, e quindi sarà soggetto alle logiche di inizializzazione e bean injection di Spring.</p>
+</div>
+<div class="paragraph">
+<p>Abbiamo creato dunque la nostra classe di servizio, ma come facciamo a richiamarla all&#8217;interno del nostro controller? Ciò che è necessario fare è in qualche modo <em>collegare</em> le classi @Controller e @Service - ciò è possibile trame un @Decoratore particolare detto <strong>Autowired</strong>. Vediamo come potrebbe essere riscritto l&#8217;HelloWorldController tramite questa annotazione:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.controller</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestBody</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.example.demo.dto.HelloWorldDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.example.demo.service.HelloWorldService</span><span class="o">;</span>
+
+<span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">HelloWorldService</span> <span class="n">helloWorldService</span><span class="o">;</span>
+
+    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/hello"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">helloWorld</span><span class="o">(</span>
+            <span class="nd">@RequestBody</span> <span class="nc">HelloWorldDTO</span> <span class="n">helloWorldDTO</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="n">helloWorldService</span><span class="o">.</span><span class="na">sayHello</span><span class="o">(</span><span class="n">helloWorldDTO</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Nuovamente notiamo che non vi è una inizializzazione esplicità dell&#8217;oggetto Java HelloWorldService, l&#8217;oggetto è stato inizializzato a runtime da Spring e collegato al nostro @RestController tramite la decorazione @Autowired. Per questa ragione, quando invocheremo il metodo di istanza <strong>sayHello</strong>, non riceveremo un NullPointerException ma otterremo il messaggio che ci aspettiamo. Effettuiamo ora il test:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nv">$ </span>curl <span class="nt">-X</span> POST http://localhost:8080/hello <span class="nt">-d</span> <span class="s1">'{"nome": "Francesco"}'</span> <span class="nt">-H</span> <span class="s1">'Content-Type:application/json'</span>
+Hello Francesco!</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_component">@Component</h3>
@@ -2142,7 +2223,7 @@ Hello francesco!</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-07 09:58:54 +0200
+Last updated 2022-10-09 15:36:53 +0200
 </div>
 </div>
 </body>
