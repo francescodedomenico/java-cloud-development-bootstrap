@@ -841,6 +841,8 @@ Creare l'API DELETE /employee/{matricola} che consente di aggiornare l'elenco di
 
 == Capitolo 2: La logica di business e come implementarla
 
+Abbiamo fornito una prima introduzione sul mondo Spring e Springboot, abbiamo implementato i primi controller e scoperto come comunica
+
 === @Service + @Autowired
 
 === @Component
