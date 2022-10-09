@@ -2179,7 +2179,7 @@ Hello francesco!</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Nuovamente notiamo che non vi è una inizializzazione esplicità dell&#8217;oggetto Java HelloWorldService, l&#8217;oggetto è stato inizializzato a runtime da Spring e collegato al nostro @RestController tramite la decorazione @Autowired. Per questa ragione, quando invocheremo il metodo di istanza <strong>sayHello</strong>, non riceveremo un NullPointerException ma otterremo il messaggio che ci aspettiamo. Effettuiamo ora il test:</p>
+<p>Nuovamente notiamo che non vi è una inizializzazione esplicita dell&#8217;oggetto Java HelloWorldService, l&#8217;oggetto è stato inizializzato a runtime da Spring e collegato al nostro @RestController tramite la decorazione @Autowired. Per questa ragione, quando invocheremo il metodo di istanza <strong>sayHello</strong>, non riceveremo un NullPointerException ma otterremo il messaggio che ci aspettiamo. Effettuiamo ora il test:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2187,14 +2187,29 @@ Hello francesco!</code></pre>
 Hello Francesco!</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Abbiamo effettuato il collegamento tra un @Controller ed un @Service, ma niente ci vieta di effettuare in @Autowired il collegamento tra due classi @Service. Questo pattern non è inusuale in quanto è possibile costruire il Service Layer della nostra applicazione componendo tra di loro diversi elementi omogenei.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_component">@Component</h3>
-
+<div class="paragraph">
+<p>Il @Component è un decoratore, proprio come @Service, pur non essendo specifico di alcun layer applicativo, abbiamo la possibilità di utilizzarlo proprio come @Service. La sua inizializzazione avverrà a runtime, ed i beans in esso contenuti verranno inizializzati a cascata, purché posto in un subpackage della nostra @SpringApplication.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_configuration">@Configuration</h3>
-
+<div class="paragraph">
+<p>Il decoratore @Configuration è un decoratore speciale in quanto effettua il binding con un file speciale delle nostre applicazioni java chiamato <strong>application.properties</strong>. Si tratta di un file di testo particolare attraverso il quale è possibile inizializzare una mappa di coppie chiave valore, od una lista di elementi.</p>
+</div>
+<div class="paragraph">
+<p>Perché è importante memorizzare valori in questi files anziché renderli disponibili direttamente nel codice? Modificare un file di test è di gran lunga più conveniente che non ricompilare l&#8217;intera applicazione per modificare, ad esempio, una semplice label di testo.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"></code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2223,7 +2238,7 @@ Hello Francesco!</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-09 15:36:53 +0200
+Last updated 2022-10-09 16:52:03 +0200
 </div>
 </div>
 </body>

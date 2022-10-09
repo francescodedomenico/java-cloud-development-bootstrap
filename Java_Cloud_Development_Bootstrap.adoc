@@ -909,7 +909,7 @@ public class HelloWorldController {
 }
 ----
 
-Nuovamente notiamo che non vi è una inizializzazione esplicità dell'oggetto Java HelloWorldService, l'oggetto è stato inizializzato a runtime da Spring e collegato al nostro @RestController tramite la decorazione @Autowired. Per questa ragione, quando invocheremo il metodo di istanza *sayHello*, non riceveremo un NullPointerException ma otterremo il messaggio che ci aspettiamo. Effettuiamo ora il test:
+Nuovamente notiamo che non vi è una inizializzazione esplicita dell'oggetto Java HelloWorldService, l'oggetto è stato inizializzato a runtime da Spring e collegato al nostro @RestController tramite la decorazione @Autowired. Per questa ragione, quando invocheremo il metodo di istanza *sayHello*, non riceveremo un NullPointerException ma otterremo il messaggio che ci aspettiamo. Effettuiamo ora il test:
 
 [source, shell]
 ----
@@ -917,12 +917,23 @@ $ curl -X POST http://localhost:8080/hello -d '{"nome": "Francesco"}' -H 'Conten
 Hello Francesco!
 ----
 
-
-
+Abbiamo effettuato il collegamento tra un @Controller ed un @Service, ma niente ci vieta di effettuare in @Autowired il collegamento tra due classi @Service. Questo pattern non è inusuale in quanto è possibile costruire il Service Layer della nostra applicazione componendo tra di loro diversi elementi omogenei.
 
 === @Component
 
+Il @Component è un decoratore, proprio come @Service, pur non essendo specifico di alcun layer applicativo, abbiamo la possibilità di utilizzarlo proprio come @Service. La sua inizializzazione avverrà a runtime, ed i beans in esso contenuti verranno inizializzati a cascata, purché posto in un subpackage della nostra @SpringApplication.
+
 === @Configuration
+
+Il decoratore @Configuration è un decoratore speciale in quanto effettua il binding con un file speciale delle nostre applicazioni java chiamato *application.properties*. Si tratta di un file di testo particolare attraverso il quale è possibile inizializzare una mappa di coppie chiave valore, od una lista di elementi.
+
+Perché è importante memorizzare valori in questi files anziché renderli disponibili direttamente nel codice? Modificare un file di test è di gran lunga più conveniente che non ricompilare l'intera applicazione per modificare, ad esempio, una semplice label di testo.
+
+
+
+[source, properties]
+----
+----
 
 == Soluzioni
 
