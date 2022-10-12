@@ -2205,9 +2205,238 @@ Hello Francesco!</code></pre>
 <div class="paragraph">
 <p>Perché è importante memorizzare valori in questi files anziché renderli disponibili direttamente nel codice? Modificare un file di test è di gran lunga più conveniente che non ricompilare l&#8217;intera applicazione per modificare, ad esempio, una semplice label di testo.</p>
 </div>
+<div class="paragraph">
+<p>Riportiamo un esempio di application.properties contenente un&#8217;unica configurazione, riportandoci all&#8217;esempio di HelloWorld immaginiamoci un messaggio di saluto di default da utilizzare in caso non inviassimo alcun nome come parametro</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="properties"></code></pre>
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">helloworld.defaultmessage</span><span class="p">=</span><span class="s">"Hello World!"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Non appena inseriamo questa linea in application.properties vedremo che il nostro IDE (in questo caso VSCode) ci segnala il seguente messaggio:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./img/appproperties_unkown.jpg" alt="appproperties unkown">
+</div>
+</div>
+<div class="paragraph">
+<p>La property che abbiamo appena dichiarato non fa parte di alcuna property dichiarata nei packages che abbiamo importato (ad esempio non è una property di SprinBoot). Per questa ragione ci invita a dichiararne la tipologia ed a fornire una descrizione della property in modo che chi importa il software comprenda i valori al suo interno.</p>
+</div>
+<div class="paragraph">
+<p>Per fare ciò creeremo un nuovo file chiamato <strong>additional-spring-configuration-metadata.json</strong> all&#8217;interno della cartella ./src/main/resources/META-INF</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./img/appproperties_additional.jpg" alt="appproperties additional">
+</div>
+</div>
+<div class="paragraph">
+<p>al suo interno descriveremo il dominio di valori accettato per la nuova property ed una descrizione:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+    </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"helloworld.defaultmessage"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"java.lang.String"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Messaggio di default in caso di assenza helloDto'"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A questo punto possiamo creare il nuovo componente Spring @Configuration. Creeremo dunque un subpackage <strong>configuration</strong> che conterrà i file di configurazione della nostra applicazione.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.configuration</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.boot.context.properties.ConfigurationProperties</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Objects</span><span class="o">;</span>
+
+<span class="nd">@Configuration</span>
+<span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">"helloworld"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldConfiguration</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">defaultMessage</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">HelloWorldConfiguration</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">HelloWorldConfiguration</span><span class="o">(</span><span class="nc">String</span> <span class="n">defaultMessage</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">defaultMessage</span> <span class="o">=</span> <span class="n">defaultMessage</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getDefaultMessage</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMessage</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDefaultMessage</span><span class="o">(</span><span class="nc">String</span> <span class="n">defaultMessage</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">defaultMessage</span> <span class="o">=</span> <span class="n">defaultMessage</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">HelloWorldConfiguration</span> <span class="nf">defaultMessage</span><span class="o">(</span><span class="nc">String</span> <span class="n">defaultMessage</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">setDefaultMessage</span><span class="o">(</span><span class="n">defaultMessage</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="o">==</span> <span class="k">this</span><span class="o">)</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(!(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="nc">HelloWorldConfiguration</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">HelloWorldConfiguration</span> <span class="n">helloWorldConfiguration</span> <span class="o">=</span> <span class="o">(</span><span class="nc">HelloWorldConfiguration</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
+        <span class="k">return</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">defaultMessage</span><span class="o">,</span> <span class="n">helloWorldConfiguration</span><span class="o">.</span><span class="na">defaultMessage</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">hashCode</span><span class="o">(</span><span class="n">defaultMessage</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"{"</span> <span class="o">+</span>
+                <span class="s">" defaultMessage='"</span> <span class="o">+</span> <span class="n">getDefaultMessage</span><span class="o">()</span> <span class="o">+</span> <span class="s">"'"</span> <span class="o">+</span>
+                <span class="s">"}"</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Oltre al decoratore @Configuration aggiungeremo il decoratore @ConfigurationProperties specificando il prefisso a partire dal quale i campi della classe saranno popolati. Come è possibile notare il nome della variabile è <strong>defaultMessage</strong> è leggermente diverso da quello della property che abbiamo dichiarato <strong>defaultmessage</strong>. Questo disallineamento è voluto in quanto vogliamo dimostrare come Spring, data una classe configuration, consenta allo sviluppatore di scrivere la property in diversi modi. In particolare sarebbe riuscito a leggere qualunque di questi valori:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="err">helloworld.defaultMessage</span>
+<span class="err">helloworld.defaultmessage</span>
+<span class="err">helloworld.default_message</span>
+<span class="err">helloworld.default-message</span>
+<span class="err">helloworld.DEFAULT_MESSAGE</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Come possiamo dunque utilizzare questa @Configuration? Di nuovo, tramite @Autowired !</p>
+</div>
+<div class="paragraph">
+<p>Modifichiamo dunque la classe HelloWorldService in modo da importare la classe @Configuration e sfruttarla per gli scopi che ci siamo prefissati:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.service</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.example.demo.configuration.HelloWorldConfiguration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.example.demo.dto.HelloWorldDTO</span><span class="o">;</span>
+
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldService</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">HelloWorldConfiguration</span> <span class="n">helloWorldConfiguration</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">sayHello</span><span class="o">(</span><span class="nc">HelloWorldDTO</span> <span class="n">helloDto</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">helloDto</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">helloDto</span><span class="o">.</span><span class="na">getNome</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="s">""</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">helloDto</span><span class="o">.</span><span class="na">getNome</span><span class="o">()))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">helloWorldConfiguration</span><span class="o">.</span><span class="na">getDefaultMessage</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span>
+            <span class="k">return</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"Hello %s!"</span><span class="o">,</span> <span class="n">helloDto</span><span class="o">.</span><span class="na">getNome</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Per mezzo di @Autowired HelloWorldService sarà in grado di accedere ai campi di HelloWorldConfiguration ed effettuare logica, avete notato che non abbiamo mai invocato il costruttore passando i parametri di application.properties? Questa operazione viene effettuata in automatico dal framework in fase di avvio della nostra applicazione!</p>
+</div>
+<div class="paragraph">
+<p>Abbiamo modificato il servizio affichè, qualora il DTO fosse nullo, di restituire un messaggio di saluto di default.</p>
+</div>
+<div class="paragraph">
+<p>Proviamo dunque ad invocare l&#8217;API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">curl <span class="nt">-X</span> POST http://localhost:8080/hello
+<span class="o">{</span><span class="s2">"timestamp"</span>:<span class="s2">"2022-10-12T07:03:31.517+00:00"</span>,<span class="s2">"status"</span>:400,<span class="s2">"error"</span>:<span class="s2">"Bad Request"</span>,<span class="s2">"path"</span>:<span class="s2">"/hello"</span><span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Perchè sta accadendo questo? La ragione potrebbe risiedere nel fatto che stiamo invocando la nostra API senza passare alcun @RequestBody.</p>
+</div>
+<div class="paragraph">
+<p>In effetti, consultando l&#8217;implementazione del decoratore:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
+ * Annotation indicating a method parameter should be bound to the body of the web request.
+ * The body of the request is passed through an {@link HttpMessageConverter} to resolve the
+ * method argument depending on the content type of the request. Optionally, automatic
+ * validation can be applied by annotating the argument with {@code @Valid}.
+ *
+ * &lt;p&gt;Supported for annotated handler methods.
+ *
+ * @author Arjen Poutsma
+ * @since 3.0
+ * @see RequestHeader
+ * @see ResponseBody
+ * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+ */</span>
+<span class="nd">@Target</span><span class="o">(</span><span class="nc">ElementType</span><span class="o">.</span><span class="na">PARAMETER</span><span class="o">)</span>
+<span class="nd">@Retention</span><span class="o">(</span><span class="nc">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
+<span class="nd">@Documented</span>
+<span class="kd">public</span> <span class="nd">@interface</span> <span class="nc">RequestBody</span> <span class="o">{</span>
+
+	<span class="cm">/**
+	 * Whether body content is required.
+	 * &lt;p&gt;Default is {@code true}, leading to an exception thrown in case
+	 * there is no body content. Switch this to {@code false} if you prefer
+	 * {@code null} to be passed when the body content is {@code null}.
+	 * @since 3.2
+	 */</span>
+	<span class="kt">boolean</span> <span class="nf">required</span><span class="o">()</span> <span class="k">default</span> <span class="kc">true</span><span class="o">;</span>
+
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notiamo che lo sviluppatore ci ha lasciato un&#8217;indicazione ben precisa riguardo al fatto che, se omesso il campi required, sarà impostato di default a <strong>true</strong>, rendendo obbligatoria la presenza di un request body alla nostra chiamata.</p>
+</div>
+<div class="paragraph">
+<p>Modifichiamo dunque il controller rendendo il @RequestBody opzionale:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">HelloWorldService</span> <span class="n">helloWorldService</span><span class="o">;</span>
+
+    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/hello"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">helloWorld</span><span class="o">(</span>
+            <span class="nd">@RequestBody</span><span class="o">(</span><span class="n">required</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span> <span class="nc">HelloWorldDTO</span> <span class="n">helloWorldDTO</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="n">helloWorldService</span><span class="o">.</span><span class="na">sayHello</span><span class="o">(</span><span class="n">helloWorldDTO</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>provando ora ad invocare il servizio:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">curl <span class="nt">-X</span> POST http://localhost:8080/hello
+<span class="s2">"Hello, World!"</span></code></pre>
 </div>
 </div>
 </div>
@@ -2238,7 +2467,7 @@ Hello Francesco!</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-09 16:52:03 +0200
+Last updated 2022-10-12 09:43:05 +0200
 </div>
 </div>
 </body>

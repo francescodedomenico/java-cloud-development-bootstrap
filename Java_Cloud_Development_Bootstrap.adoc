@@ -929,10 +929,216 @@ Il decoratore @Configuration è un decoratore speciale in quanto effettua il bin
 
 Perché è importante memorizzare valori in questi files anziché renderli disponibili direttamente nel codice? Modificare un file di test è di gran lunga più conveniente che non ricompilare l'intera applicazione per modificare, ad esempio, una semplice label di testo.
 
-
+Riportiamo un esempio di application.properties contenente un'unica configurazione, riportandoci all'esempio di HelloWorld immaginiamoci un messaggio di saluto di default da utilizzare in caso non inviassimo alcun nome come parametro
 
 [source, properties]
 ----
+helloworld.defaultmessage="Hello World!"
+----
+Non appena inseriamo questa linea in application.properties vedremo che il nostro IDE (in questo caso VSCode) ci segnala il seguente messaggio:
+
+image::./img/appproperties_unkown.jpg[]
+
+La property che abbiamo appena dichiarato non fa parte di alcuna property dichiarata nei packages che abbiamo importato (ad esempio non è una property di SprinBoot). Per questa ragione ci invita a dichiararne la tipologia ed a fornire una descrizione della property in modo che chi importa il software comprenda i valori al suo interno.
+
+Per fare ciò creeremo un nuovo file chiamato *additional-spring-configuration-metadata.json* all'interno della cartella ./src/main/resources/META-INF
+
+image::./img/appproperties_additional.jpg[]
+
+al suo interno descriveremo il dominio di valori accettato per la nuova property ed una descrizione:
+
+[source, json]
+----
+{
+    "properties": [
+        {
+            "name": "helloworld.defaultmessage",
+            "type": "java.lang.String",
+            "description": "Messaggio di default in caso di assenza helloDto'"
+        }
+    ]
+}
+
+----
+
+A questo punto possiamo creare il nuovo componente Spring @Configuration. Creeremo dunque un subpackage *configuration* che conterrà i file di configurazione della nostra applicazione.
+
+[source, java]
+----
+package com.example.demo.configuration;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.Objects;
+
+@Configuration
+@ConfigurationProperties(prefix = "helloworld")
+public class HelloWorldConfiguration {
+    String defaultMessage;
+
+    public HelloWorldConfiguration() {
+    }
+
+    public HelloWorldConfiguration(String defaultMessage) {
+        this.defaultMessage = defaultMessage;
+    }
+
+    public String getDefaultMessage() {
+        return this.defaultMessage;
+    }
+
+    public void setDefaultMessage(String defaultMessage) {
+        this.defaultMessage = defaultMessage;
+    }
+
+    public HelloWorldConfiguration defaultMessage(String defaultMessage) {
+        setDefaultMessage(defaultMessage);
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof HelloWorldConfiguration)) {
+            return false;
+        }
+        HelloWorldConfiguration helloWorldConfiguration = (HelloWorldConfiguration) o;
+        return Objects.equals(defaultMessage, helloWorldConfiguration.defaultMessage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(defaultMessage);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                " defaultMessage='" + getDefaultMessage() + "'" +
+                "}";
+    }
+
+}
+
+----
+
+Oltre al decoratore @Configuration aggiungeremo il decoratore @ConfigurationProperties specificando il prefisso a partire dal quale i campi della classe saranno popolati. Come è possibile notare il nome della variabile è *defaultMessage* è leggermente diverso da quello della property che abbiamo dichiarato *defaultmessage*. Questo disallineamento è voluto in quanto vogliamo dimostrare come Spring, data una classe configuration, consenta allo sviluppatore di scrivere la property in diversi modi. In particolare sarebbe riuscito a leggere qualunque di questi valori:
+
+[source, properties]
+----
+helloworld.defaultMessage
+helloworld.defaultmessage
+helloworld.default_message
+helloworld.default-message
+helloworld.DEFAULT_MESSAGE
+----
+
+Come possiamo dunque utilizzare questa @Configuration? Di nuovo, tramite @Autowired !
+
+Modifichiamo dunque la classe HelloWorldService in modo da importare la classe @Configuration e sfruttarla per gli scopi che ci siamo prefissati:
+
+[source, java]
+----
+package com.example.demo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.configuration.HelloWorldConfiguration;
+import com.example.demo.dto.HelloWorldDTO;
+
+@Service
+public class HelloWorldService {
+    @Autowired
+    HelloWorldConfiguration helloWorldConfiguration;
+
+    public String sayHello(HelloWorldDTO helloDto) {
+
+        if (helloDto == null || helloDto.getNome() == null || "".equals(helloDto.getNome())) {
+            return helloWorldConfiguration.getDefaultMessage();
+        } else
+            return String.format("Hello %s!", helloDto.getNome());
+    }
+}
+----
+
+Per mezzo di @Autowired HelloWorldService sarà in grado di accedere ai campi di HelloWorldConfiguration ed effettuare logica, avete notato che non abbiamo mai invocato il costruttore passando i parametri di application.properties? Questa operazione viene effettuata in automatico dal framework in fase di avvio della nostra applicazione!
+
+Abbiamo modificato il servizio affichè, qualora il DTO fosse nullo, di restituire un messaggio di saluto di default.
+
+Proviamo dunque ad invocare l'API:
+
+[source, shell]
+----
+curl -X POST http://localhost:8080/hello
+{"timestamp":"2022-10-12T07:03:31.517+00:00","status":400,"error":"Bad Request","path":"/hello"}
+----
+
+Perchè sta accadendo questo? La ragione potrebbe risiedere nel fatto che stiamo invocando la nostra API senza passare alcun @RequestBody.
+
+In effetti, consultando l'implementazione del decoratore:
+
+[source, java]
+----
+
+/**
+ * Annotation indicating a method parameter should be bound to the body of the web request.
+ * The body of the request is passed through an {@link HttpMessageConverter} to resolve the
+ * method argument depending on the content type of the request. Optionally, automatic
+ * validation can be applied by annotating the argument with {@code @Valid}.
+ *
+ * <p>Supported for annotated handler methods.
+ *
+ * @author Arjen Poutsma
+ * @since 3.0
+ * @see RequestHeader
+ * @see ResponseBody
+ * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+ */
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface RequestBody {
+
+	/**
+	 * Whether body content is required.
+	 * <p>Default is {@code true}, leading to an exception thrown in case
+	 * there is no body content. Switch this to {@code false} if you prefer
+	 * {@code null} to be passed when the body content is {@code null}.
+	 * @since 3.2
+	 */
+	boolean required() default true;
+
+}
+----
+
+Notiamo che lo sviluppatore ci ha lasciato un'indicazione ben precisa riguardo al fatto che, se omesso il campi required, sarà impostato di default a *true*, rendendo obbligatoria la presenza di un request body alla nostra chiamata.
+
+Modifichiamo dunque il controller rendendo il @RequestBody opzionale:
+
+[source, java]
+----
+@RestController
+public class HelloWorldController {
+    @Autowired
+    HelloWorldService helloWorldService;
+
+    @PostMapping("/hello")
+    public @ResponseBody ResponseEntity<String> helloWorld(
+            @RequestBody(required = false) HelloWorldDTO helloWorldDTO) {
+        return ResponseEntity.ok(helloWorldService.sayHello(helloWorldDTO));
+    }
+}
+----
+
+provando ora ad invocare il servizio:
+
+[source, shell]
+----
+curl -X POST http://localhost:8080/hello
+"Hello, World!"
 ----
 
 == Soluzioni
