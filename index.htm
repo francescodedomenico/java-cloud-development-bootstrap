@@ -690,6 +690,7 @@ pre.rouge {
 <li><a href="#_service_autowired">@Service + @Autowired</a></li>
 <li><a href="#_component">@Component</a></li>
 <li><a href="#_configuration">@Configuration</a></li>
+<li><a href="#_exception_handling">Exception Handling</a></li>
 </ul>
 </li>
 <li><a href="#_soluzioni">Soluzioni</a></li>
@@ -2440,6 +2441,35 @@ Hello Francesco!</code></pre>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_exception_handling">Exception Handling</h3>
+<div class="paragraph">
+<p>La gestione delle eccezioni è una parte fondamentale dell&#8217;implementazione delle logiche di business della nostra applicazione.</p>
+</div>
+<div class="paragraph">
+<p>In un mondo perfetto potremmo sviluppare il nostro codice dando per scontato che funzioni sempre tutto, dalla nostra logia interna alle interazioni con i clients ed i servizi esterni.</p>
+</div>
+<div class="paragraph">
+<p>Purtroppo il nostro software, il software con il quale ci integriamo, i frameworks che utilizziamo e le infrastrutture hardware e network che utilizziamo (inclusi i sistemi operativi, gli adattatore di rete ed i drivers) sono possibili oggetti di fallimento per le cause più disparate.</p>
+</div>
+<div class="paragraph">
+<p>È fondamentale rendere il nostro software robusto a queste anomalie, pensando <strong>sempre</strong> a cosa potrebbe accadere nel caso peggiore ed informare chi ci chiama del fatto che la sua richiesta è andata in errore, invitando a riprovare oppure a modificare la richiesta inviata, qualora questa non fosse aderente a ciò che ci aspettiamo.</p>
+</div>
+<div class="paragraph">
+<p>Che cos&#8217;è una eccezione od <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html">Exception</a>?</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+The class Exception and its subclasses are a form of Throwable that indicates conditions that a reasonable application might want to catch.
+</blockquote>
+<div class="attribution">
+&#8212; <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html">Exception javadoc</a>
+</div>
+</div>
+<div class="paragraph">
+<p>In generale, utilizzeremo le eccezioni per segnalare un comportamento inatteso, indesiderato, imprevisto del nostro codice affinché chi invoca il nostro software (il client od anche il software stesso al suo interno) possa gestirlo.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2467,7 +2497,7 @@ Hello Francesco!</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-12 09:43:05 +0200
+Last updated 2022-10-12 15:14:45 +0200
 </div>
 </div>
 </body>

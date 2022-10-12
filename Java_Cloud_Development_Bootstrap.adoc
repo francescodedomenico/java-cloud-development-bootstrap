@@ -1141,6 +1141,25 @@ curl -X POST http://localhost:8080/hello
 "Hello, World!"
 ----
 
+=== Exception Handling
+
+La gestione delle eccezioni è una parte fondamentale dell'implementazione delle logiche di business della nostra applicazione.
+
+In un mondo perfetto potremmo sviluppare il nostro codice dando per scontato che funzioni sempre tutto, dalla nostra logia interna alle interazioni con i clients ed i servizi esterni.
+
+Purtroppo il nostro software, il software con il quale ci integriamo, i frameworks che utilizziamo e le infrastrutture hardware e network che utilizziamo (inclusi i sistemi operativi, gli adattatore di rete ed i drivers) sono possibili oggetti di fallimento per le cause più disparate.
+
+È fondamentale rendere il nostro software robusto a queste anomalie, pensando *sempre* a cosa potrebbe accadere nel caso peggiore ed informare chi ci chiama del fatto che la sua richiesta è andata in errore, invitando a riprovare oppure a modificare la richiesta inviata, qualora questa non fosse aderente a ciò che ci aspettiamo.
+
+Che cos'è una eccezione od https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html[Exception]?
+
+"The class Exception and its subclasses are a form of Throwable that indicates conditions that a reasonable application might want to catch."
+-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html[Exception javadoc]
+
+In generale, utilizzeremo le eccezioni per segnalare un comportamento inatteso, indesiderato, imprevisto del nostro codice affinché chi invoca il nostro software (il client od anche il software stesso al suo interno) possa gestirlo.
+
+
+
 == Soluzioni
 
 [source, java]
