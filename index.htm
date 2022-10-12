@@ -2469,6 +2469,158 @@ The class Exception and its subclasses are a form of Throwable that indicates co
 <div class="paragraph">
 <p>In generale, utilizzeremo le eccezioni per segnalare un comportamento inatteso, indesiderato, imprevisto del nostro codice affinché chi invoca il nostro software (il client od anche il software stesso al suo interno) possa gestirlo.</p>
 </div>
+<div class="paragraph">
+<p>Abbiamo già avuto modo di vedere che Spring, in alcuni casi particolari di errore, già risponde al client con un certo oggetto di risposta, quest&#8217;oggetto si chiama <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/server/ResponseStatusException.html">ResponseStatusException</a></p>
+</div>
+<div class="paragraph">
+<p>In caso di necessità possiamo effettuare il throw di una nuova eccezione di questo tipo all&#8217;interno del nostro codice, ad esempio:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/testexception"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">testException</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">ResponseStatusException</span><span class="o">(</span>
+            <span class="nc">HttpStatus</span><span class="o">.</span><span class="na">NOT_FOUND</span><span class="o">,</span> <span class="s">"NOT_FOUND"</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ci restituirà in caso di invocazione:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">curl <span class="nt">-X</span> POST localhost:8080/testexception
+<span class="o">{</span><span class="s2">"timestamp"</span>:<span class="s2">"2022-10-12T13:30:23.304+00:00"</span>,<span class="s2">"status"</span>:404,<span class="s2">"error"</span>:<span class="s2">"Not Found"</span>,<span class="s2">"path"</span>:<span class="s2">"/testexception"</span><span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Per utilizzi semplici è un ottimo strumento, tuttavia spesso abbiamo la necessità di comunicare messaggi di errore più parlanti dei semplici ritorni del protocollo HTTP, pensiamo ad esempio ad un errore restituito da un webserver dopo la validazione di un determinato @ResponseBody, magari vogliamo rispondere al chiamante che uno o più campi non sono validi e quindi di riprovare.</p>
+</div>
+<div class="paragraph">
+<p>Come possiamo fare dunque?</p>
+</div>
+<div class="paragraph">
+<p>Una buona idea sarebbe creare una nostra classe di Eccezione che abbiamo un codice di errore ed un messaggio di errore applicativi, magari censiti staticamente come dei Java enums:.</p>
+</div>
+<div class="paragraph">
+<p>Creiamo dunque un subpackage <strong>exception</strong> ed all&#8217;interno creiamo la nostra Eccezione di risposta alle API chiamata <strong>ApiException</strong>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.exception</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Objects</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.http.HttpStatus</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.lang.Nullable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.server.ResponseStatusException</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ApiException</span> <span class="kd">extends</span> <span class="nc">ResponseStatusException</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nc">ErrorCode</span> <span class="n">errorcode</span><span class="o">;</span>
+
+    <span class="cm">/**
+	 * Constructor with a response status.
+	 * @param status the HTTP status (required)
+	 */</span>
+	<span class="kd">public</span> <span class="nf">ApiException</span><span class="o">(</span><span class="nc">HttpStatus</span> <span class="n">status</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kd">super</span><span class="o">(</span><span class="n">status</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+	<span class="o">}</span>
+
+    <span class="cm">/**
+	 * Constructor with a response status.
+	 * @param status the HTTP status (required)
+     * @param error the errorCode
+	 */</span>
+	<span class="kd">public</span> <span class="nf">ApiException</span><span class="o">(</span><span class="nc">HttpStatus</span> <span class="n">status</span><span class="o">,</span> <span class="nc">ErrorCode</span> <span class="n">errorcode</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kd">super</span><span class="o">(</span><span class="n">status</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">errorcode</span> <span class="o">=</span> <span class="n">errorcode</span><span class="o">;</span>
+	<span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">ErrorCode</span> <span class="nf">getErrorcode</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">errorcode</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setErrorcode</span><span class="o">(</span><span class="nc">ErrorCode</span> <span class="n">errorcode</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">errorcode</span> <span class="o">=</span> <span class="n">errorcode</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="o">==</span> <span class="k">this</span><span class="o">)</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(!(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="nc">ApiException</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">ApiException</span> <span class="n">apiException</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ApiException</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
+        <span class="k">return</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">errorcode</span><span class="o">,</span> <span class="n">apiException</span><span class="o">.</span><span class="na">errorcode</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">hashCode</span><span class="o">(</span><span class="n">errorcode</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Definiamo inoltre nel medesimo subpackage <strong>ErrorCode</strong>, enum contenente tutti i nostri errore applicativi:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.exception</span><span class="o">;</span>
+
+<span class="cm">/**
+ * StatusCode allowed types
+ */</span>
+<span class="kd">public</span> <span class="kd">enum</span> <span class="nc">ErrorCode</span> <span class="o">{</span>
+
+    <span class="no">HTTP_400</span><span class="o">(</span><span class="s">"NOT_FOUND"</span><span class="o">);</span>
+
+
+
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">description</span><span class="o">;</span>
+
+    <span class="nc">ErrorCode</span><span class="o">(</span><span class="nc">String</span> <span class="n">description</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getDescription</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">description</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Creiamo un handler di prova per testare la nostra nuova eccezione:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/customexception"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">customException</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">ApiException</span><span class="o">(</span><span class="nc">HttpStatus</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">,</span> <span class="nc">ErrorCode</span><span class="o">.</span><span class="na">APP_ERROR</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Infine testiamo la nostra API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">curl <span class="nt">-X</span> POST localhost:8080/customexception
+<span class="o">{</span><span class="s2">"timestamp"</span>:<span class="s2">"2022-10-12T14:19:40.320+00:00"</span>,<span class="s2">"status"</span>:400,<span class="s2">"error"</span>:<span class="s2">"Bad Request"</span>,<span class="s2">"path"</span>:<span class="s2">"/customexception"</span><span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Com&#8217;è possibile notare l&#8217;eccezione è stata lanciata, ma non notiamo alcuna differenza rispoetto all&#8217;eccezione lanciata costruendo un oggetto ResponseStatusException.</p>
+</div>
+<div class="paragraph">
+<p>Questo perchè Spring ha internamente un oggetto chiamato Exception Handler che intercetta quella specifica eccezione (e non le sue derivazioni od estensioni) e quindi ignora i campi aggiuntivi che potrebbero essere stati aggiunti.</p>
+</div>
+<div class="paragraph">
+<p>Al fine di risolvere questo problema dovremo creare noi il nostro exception handler in modo che gestisca la risposta nel modo in cui ci aspettiamo!</p>
+</div>
 </div>
 </div>
 </div>
@@ -2497,7 +2649,7 @@ The class Exception and its subclasses are a form of Throwable that indicates co
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-12 15:14:45 +0200
+Last updated 2022-10-12 16:23:57 +0200
 </div>
 </div>
 </body>
