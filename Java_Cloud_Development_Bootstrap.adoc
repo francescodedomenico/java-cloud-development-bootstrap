@@ -809,7 +809,7 @@ Creare un'api GET /employees che restituisca una lista di impiegati Employee. Ou
     "birthdate": "01-01-1989",
     "sex":"m",
     "RAL": 30000
-    }
+    },
     {
     "matricola": 1022892,
     "name": "Flavia",
@@ -838,6 +838,78 @@ Arricchire l'API precedente per modificare qualunque campo dell'impiegato, esclu
 
 ==== 1.9 Delete Employee
 Creare l'API DELETE /employee/{matricola} che consente di aggiornare l'elenco di impiegati in caso di licenziamento o dimissione dell'impiegato con matricola data.
+
+==== 1.10 Compare employee
+Creare un'API /employee/compare che riceve in request body una lista di Employee (2) e ne effettua il confronto, in particolare ci aspettiamo che l'esito di questo confronto:
+
+[source, json]
+----
+[{
+    "matricola": 1022891,
+    "name": "Mario",
+    "surname": "Rossi",
+    "displayName": "Mario Rossi",
+    "birthdate": "01-01-1989",
+    "sex":"m",
+    "RAL": 30000
+},
+{
+    "matricola": 1022891,
+    "name": "Francesco",
+    "surname": "Rossi",
+    "displayName": "Francesco Rossi",
+    "birthdate": "20-01-1989",
+    "sex":"m",
+    "RAL": 50000
+}]
+----
+restituisca *true* come risposta, questo confronto invece
+[source, json]
+----
+{
+    "matricola": 1022891,
+    "name": "Mario",
+    "surname": "Rossi",
+    "displayName": "Mario Rossi",
+    "birthdate": "01-01-1989",
+    "sex":"m",
+    "RAL": 30000
+},
+{
+    "matricola": 1022892,
+    "name": "Francesco",
+    "surname": "Rossi",
+    "displayName": "Francesco Rossi",
+    "birthdate": "20-01-1989",
+    "sex":"m",
+    "RAL": 50000
+}
+----
+restituisca *false*
+
+[NOTE]
+====
+Utilizzare i soli metodi ereditati dalla superclasse Object per effettuare il confronto
+====
+
+==== 1.11 Find Employee in lista
+
+Creare un'API /employee/find che riceva in request body un employee e determini se presente in azienda. L'elenco degli impiegati sarà memorizzato in una lista.
+
+[NOTE]
+====
+Utilizzare i soli metodi delle strutture dati Java per verificare la presenza
+====
+
+
+==== 1.12 Find Employee in insieme
+Effettuare il medesimo controllo dell'esercizio precedente, ma verificandone la presenza in un insieme.
+
+[NOTE]
+====
+Utilizzare i soli metodi delle strutture dati Java per verificare la presenza
+====
+
 
 == Capitolo 2: La logica di business e come implementarla
 

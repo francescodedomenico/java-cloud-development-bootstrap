@@ -2043,7 +2043,7 @@ Hello francesco!</code></pre>
     </span><span class="nl">"birthdate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01-01-1989"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"sex"</span><span class="p">:</span><span class="s2">"m"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"RAL"</span><span class="p">:</span><span class="w"> </span><span class="mi">30000</span><span class="w">
-    </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
     </span><span class="p">{</span><span class="w">
     </span><span class="nl">"matricola"</span><span class="p">:</span><span class="w"> </span><span class="mi">1022892</span><span class="p">,</span><span class="w">
     </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Flavia"</span><span class="p">,</span><span class="w">
@@ -2093,6 +2093,116 @@ Hello francesco!</code></pre>
 <h4 id="_1_9_delete_employee">1.9 Delete Employee</h4>
 <div class="paragraph">
 <p>Creare l&#8217;API DELETE /employee/{matricola} che consente di aggiornare l&#8217;elenco di impiegati in caso di licenziamento o dimissione dell&#8217;impiegato con matricola data.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1_10_compare_employee">1.10 Compare employee</h4>
+<div class="paragraph">
+<p>Creare un&#8217;API /employee/compare che riceve in request body una lista di Employee (2) e ne effettua il confronto, in particolare ci aspettiamo che l&#8217;esito di questo confronto:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">[{</span><span class="w">
+    </span><span class="nl">"matricola"</span><span class="p">:</span><span class="w"> </span><span class="mi">1022891</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mario"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"surname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rossi"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"displayName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mario Rossi"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"birthdate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01-01-1989"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"sex"</span><span class="p">:</span><span class="s2">"m"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"RAL"</span><span class="p">:</span><span class="w"> </span><span class="mi">30000</span><span class="w">
+</span><span class="p">},</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nl">"matricola"</span><span class="p">:</span><span class="w"> </span><span class="mi">1022891</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Francesco"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"surname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rossi"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"displayName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Francesco Rossi"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"birthdate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"20-01-1989"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"sex"</span><span class="p">:</span><span class="s2">"m"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"RAL"</span><span class="p">:</span><span class="w"> </span><span class="mi">50000</span><span class="w">
+</span><span class="p">}]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>restituisca <strong>true</strong> come risposta, questo confronto invece</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+    </span><span class="nl">"matricola"</span><span class="p">:</span><span class="w"> </span><span class="mi">1022891</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mario"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"surname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rossi"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"displayName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mario Rossi"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"birthdate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01-01-1989"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"sex"</span><span class="p">:</span><span class="s2">"m"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"RAL"</span><span class="p">:</span><span class="w"> </span><span class="mi">30000</span><span class="w">
+</span><span class="p">}</span><span class="err">,</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nl">"matricola"</span><span class="p">:</span><span class="w"> </span><span class="mi">1022892</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Francesco"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"surname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rossi"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"displayName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Francesco Rossi"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"birthdate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"20-01-1989"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"sex"</span><span class="p">:</span><span class="s2">"m"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"RAL"</span><span class="p">:</span><span class="w"> </span><span class="mi">50000</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>restituisca <strong>false</strong></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Utilizzare i soli metodi ereditati dalla superclasse Object per effettuare il confronto</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1_11_find_employee_in_lista">1.11 Find Employee in lista</h4>
+<div class="paragraph">
+<p>Creare un&#8217;API /employee/find che riceva in request body un employee e determini se presente in azienda. L&#8217;elenco degli impiegati sarà memorizzato in una lista.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Utilizzare i soli metodi delle strutture dati Java per verificare la presenza</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1_12_find_employee_in_insieme">1.12 Find Employee in insieme</h4>
+<div class="paragraph">
+<p>Effettuare il medesimo controllo dell&#8217;esercizio precedente, ma verificandone la presenza in un insieme.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Utilizzare i soli metodi delle strutture dati Java per verificare la presenza</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -2649,7 +2759,7 @@ The class Exception and its subclasses are a form of Throwable that indicates co
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-12 16:23:57 +0200
+Last updated 2022-10-13 10:53:01 +0200
 </div>
 </div>
 </body>
