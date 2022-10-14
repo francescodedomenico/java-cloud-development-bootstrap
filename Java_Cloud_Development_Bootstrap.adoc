@@ -761,7 +761,10 @@ Modificare l'esercizio precedente affinché l'api risponda dinamicamente al nome
 * HTTP Header
 * Cookie value *nome*
 
+output atteso: *Hello {{nome}}!*
+
 Nel caso in cui nessuno di questi parametri sia passato restituire il valore di default *Hello, World!*
+
 
 ==== 1.3 Request Body
 
