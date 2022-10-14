@@ -756,10 +756,10 @@ La classe Controller dovrà essere contenuto in un nuovo sub_package del medesim
 
 Modificare l'esercizio precedente affinché l'api risponda dinamicamente al nome dell'utente. Il nome utente potrà essere passato con uno dei seguenti parametri opzionali:
 
-* query string parameter *nome*
-* path parameter
-* HTTP Header
-* Cookie value *nome*
+* query string parameter *nome* - API: /hello
+* path parameter - API: /hello/{{nome}}
+* HTTP Header - API: /hello
+* Cookie value *nome* - API: /hello
 
 output atteso: *Hello {{nome}}!*
 
