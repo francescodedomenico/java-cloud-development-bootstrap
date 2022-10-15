@@ -1502,7 +1502,7 @@ public class ApplicationExceptionHandler
     extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(value = { ApiException.class })
-  protected ResponseEntity<ApiException> handleAPIConflict(
+  protected ResponseEntity<ApiException> handleAPIException(
       RuntimeException ex, WebRequest request) {
     ApiException exception = (ApiException) ex;
     return ResponseEntity.status(exception.getStatus()).body(exception);
@@ -2188,6 +2188,201 @@ effettuiamo infine un test:
 $ curl http://localhost:8080/testexception
 {"httpCode":404,"httpStatus":"NOT_FOUND","erroreCode":"APP_ERROR","errorMessage":"CUSTOM_APP_ERROR"}
 ----
+
+In questo caso abbiamo passato come argomento del costruttore della nostra *NotFoundException* il valore:
+
+[source, java]
+----
+ErrorCode.APP_ERROR("CUSTOM_APP_ERROR");
+----
+
+Non male vero? In questo modo possiamo gestire un insieme arbitrario di errori applicativi ed informare chi invoca i nostri servizi del tipo di anomalia che abbiamo riscontrato.
+
+In precedenza abbiamo parlato di come gli errori possano essere gestiti anche tramite redirect, attraverso il nostro ApplicationExceptionHandler possiamo gestire anche questa casistica!
+
+In questo caso dobbiamo estendere nuovamente la superclasse *RuntimeException* in modo da differenziare il tipo di evento che il nostro ExceptionHandler deve catturare. Creiamo dunque una classe *RedirectException* simile a quella già creata per ApiException.
+
+[source, java]
+----
+package com.example.demo.exception;
+
+import java.util.Objects;
+
+import org.springframework.http.HttpStatus;
+
+abstract class RedirectException extends RuntimeException {
+
+    private HttpStatus status;
+    private ErrorCode errorCode;
+
+    public RedirectException(HttpStatus status, ErrorCode errorCode) {
+        this.status = status;
+        this.errorCode = errorCode;
+    }
+
+    public RedirectException() {
+    }
+
+    public HttpStatus getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public ErrorCode getErrorCode() {
+        return this.errorCode;
+    }
+
+    public void setErrorCode(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof RedirectException)) {
+            return false;
+        }
+        RedirectException redirectException = (RedirectException) o;
+        return Objects.equals(status, redirectException.status) && Objects.equals(errorCode, redirectException.errorCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, errorCode);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                " status='" + getStatus() + "'" +
+                ", errorCode='" + getErrorCode() + "'" +
+                "}";
+    }
+
+}
+----
+Una classe del tutto simile ad ApiException, la utilizzeremo come superclasse di riferimento del nostro Handler, che gestirà tutte le eccezioni che devono essere gestite tramite redirect.
+
+Creiamo una classe specializzata per l'eccezione NotFound dunque, chiamata *NotFoundRedirectException*:
+
+[source, java]
+----
+package com.example.demo.exception;
+
+import org.springframework.http.HttpStatus;
+
+public class NotFoundRedirectException extends RedirectException{
+
+    public NotFoundRedirectException(ErrorCode e){
+        super(HttpStatus.NOT_FOUND, e);
+    }
+    
+}
+----
+Essendo i parametri passati direttamente attraverso la URL di redirect come parameters non necessitiamo di una classe Response dedicata, procediamo quindi a scrivere l'handler:
+
+[source, java]
+----
+@ExceptionHandler(value = { RedirectException.class })
+  protected RedirectView handlerRedirectException(
+      RuntimeException ex, WebRequest request) {
+    RedirectException exception = (RedirectException) ex;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+    params.add("http_code", Integer.toString(exception.getStatus().value()));
+    params.add("http_status", exception.getStatus().name());
+    params.add("error_code", exception.getErrorCode().toString());
+    params.add("error_message", exception.getErrorCode().getDescription());
+
+    return new RedirectView(
+        UriComponentsBuilder
+            .fromHttpUrl("http://localhost:8080/redirect")
+            .queryParams(params)
+            .build()
+            .encode()
+            .toString());
+  }
+----
+
+Un handler anche qui simile al precedente, ma con qualche differenza.
+Notiamo innanzitutto che non stiamo utilizzado una ResponseEntity come return ma un oggetto https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/view/RedirectView.html[RedirectView]. Quest'oggetto è un wrapper compatto che gestisce la redirect dei nostri handler, come unico parametro richiede un oggetto String che rappresenti la nostra URL di destinazione.
+
+Per compilare tale Url utilizzeremo un oggetto UriComponentsBuilder in quanto la sua struttura ci consente in maniera agevola di impostare un numero arbitrario di query_params (opportunamente codificati url_safe) e l'url di destinazione "http://localhost:8080/redirect".
+
+I parametri sono passati attraverso il metodo del builder queryParams e sono rappresentati da una MultiValueMap<String,String>. Non ci resta che popolare questa mappa con tutte le informazioni desiderate ed abbiamo fatto!
+
+proviamo dunque a testare questa eccezione (non dimentichiamoci di invocarle curl in modalità *verbose*):
+
+[source, shell]
+----
+curl http://localhost:8080/testredirectexception -v
+*   Trying 127.0.0.1:8080...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8080 (#0)
+> GET /testredirectexception HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.68.0
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 302
+< Location: http://localhost:8080/redirect?http_code=404&http_status=NOT_FOUND&error_code=APP_ERROR&error_message=CUSTOM_APP_ERROR
+< Content-Language: it-IT
+< Content-Length: 0
+< Date: Sat, 15 Oct 2022 12:47:20 GMT
+<
+* Connection #0 to host localhost left intact
+----
+
+com'è possibile notare il nostro microservizio ci ha risposto con http_code 302 ed un http header *Location* contenente tutti i parametri a cui siamo interessati.
+
+Questo tipo di risposta è tipicamente pensato per software dotati di UserAgents, ossia attori in grado di prendere il timone della navigazione in particolari momenti. Questa prerogativa è comune a tutti i browsers moderni.
+
+Proviamo ad inserire l'url nella barra degli indirizzi:
+
+image::./img/redirect_1.jpg[]
+
+ad un'analisi distratta sembrerebbe che il nostro software non stia funzionando, effettuiamo nuovamente la chiamata utilizzando il code inspector del browser aperto in modalità network:
+
+image::./img/redirect_inspect_1.jpg[]
+
+Notiamo che la nostra API di test sta funzionando a dovere, la nostra eccezione dunque è correttamente gestita. Allora cosa vuol dire quella pagina di errore?
+
+Semplicemente è Spring che ci avvisa che è stata richiesta una risorsa /redirect e che questa non è implementata da alcun controller su alcun handler, pertanto interviene rispondendoci 404 NOT_FOUND.
+
+In effetti non abbiamo implementato alcuna API su quell'endpoint. Notiamo che in risposta ad una 302 il browser veicola sempre una GET verso l'indirizzo che è stato posto in risposta all'header Location.
+
+Facciamola dunque, ipotizziamo uno scenario in cui questa API redirect, in caso di errore, restituisca un messaggio di tipo testuale:
+
+"Ops, c'è stato un errore, riprova più tardi"
+
+[source, java]
+----
+@GetMapping("/redirect")
+public @ResponseBody ResponseEntity<String> redirect(
+    @RequestParam(name="http_code") String httpCode,
+    @RequestParam(name="http_status") String httpStatus,
+    @RequestParam(name="error_code") String errorCode,
+    @RequestParam(name="error_message") String errorMessage
+) {
+    if(!httpCode.equals(Integer.toString(HttpStatus.OK.value())))
+        return ResponseEntity.ok("Ops, c'è stato un errore, riprova più tardi");
+    else
+        return ResponseEntity.ok("Tutto ok!");
+}
+----
+image::./img/redirect_ok.jpg[]
+
+In questo caso non solo stiamo lanciando un'eccezione, ma stiamo anche invocando un servizio in grado di gestirla!
+
+Questo conclude la parte di gestione delle eccezioni. Abbiamo introdotto uno strumento fondamentale che ci tornerà molto utile quando dobbiamo integrarci con altri servizi, e sarà proprio questo l'oggetto del prossimo capitolo.
+
+=== Integrazione con servizi esterni
+
 
 
 
