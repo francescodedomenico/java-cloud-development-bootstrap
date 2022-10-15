@@ -799,6 +799,11 @@ creare un'API GET /employee che restituisca un impiegato fittizio, la risposta a
 }
 ----
 
+[TIP]
+====
+I prossimi esercizi aggiungeranno API al dominio Employee, arricchisci il Controller che hai appena creato in questo esercizio, invece di crearne uno nuovo per ogni volta.
+====
+
 ==== 1.5 Employee List
 Creare un'api GET /employees che restituisca una lista di impiegati Employee. Output atteso:
 [source, json]
@@ -912,6 +917,10 @@ Effettuare il medesimo controllo dell'esercizio precedente, ma verificandone la 
 ====
 Utilizzare i soli metodi delle strutture dati Java per verificare la presenza
 ====
+
+==== 1.13 getEmployeeById
+
+Spesso di un impiegato conosciamo solo la matricola, e desideriamo conoscerne altri dati. Creiamo un'api GET /employee/{matricola} che data la matricola di un impiegato come path parameter restituisce la sua rappresentazione completa in formato JSON
 
 
 == Capitolo 2: La logica di business e come implementarla
@@ -1371,6 +1380,817 @@ Questo perchè Spring ha internamente un oggetto chiamato Exception Handler che 
 
 Al fine di risolvere questo problema dovremo creare noi il nostro exception handler in modo che gestisca la risposta nel modo in cui ci aspettiamo!
 
+Spring fornisce una classe particolare chiamata https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/method/annotation/ResponseEntityExceptionHandler.html[@ResponseEntityExceptionHandler]. Da documentazione ufficiale leggiamo:
+
+"A convenient base class for @ControllerAdvice classes that wish to provide centralized exception handling across all @RequestMapping methods through @ExceptionHandler methods."
+-- https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/method/annotation/ResponseEntityExceptionHandler.html[Spring javadoc]
+
+Attraverso questa classe possiamo quindi centralizzare la gestione delle eccezioni e, tramite una gestione opportuna di decoratori, possiamo costruire la nostra risposta di errore, qualunque essa sia.
+
+Immaginiamo una risposta generica d'errore che possa comunicarci non solo lo stato HTTP, ma anche qualche codice di errore applicativo, qualcosa di questo tipo:
+
+[source, json]
+----
+{
+	"http_code": 404,
+	"http_message": "NOT_FOUND",
+	"error_code": "EMP_404",
+	"error_message": "Impossibile trovare alcun impiegato con la matricola desiderata"
+}
+----
+
+Teniamo a mente che è possibile reagire agli errori in diversi modi, in questo modo la risposta viene ricevuta dal chiamante come corpo di risposta HTTP, chi riceve questo emssagio è quindi in grado di interpretarlo e di gestirlo in maniera opportuna. Per esempio un client javascript in esecuzione sul browser può mostrare un popup, una notifica ed una modale. Stessa cosa per un client mobile.
+
+image::./img/exception_http.png[]
+
+Talvolta le richieste non vengono inviate da una applicazione custom come può essere appunto un client javascript in esecuzione dal browser ma potrebbe arrivare una richiesta direttamente ricevuta dal browser e quindi la risposta non potrebbe essere ricevuta da un client applicativo.
+
+In questi casi tipicamente si può rispondere non tramite corpo di risposta HTTP ma rispondendo con una redirect.
+
+Immaginiamo ad esempio che una nostra API venga invocata dunque a valle di una redirect effettuata da un servizio esterno.
+
+In un browser, quando viene ricevuta una redirect (ad esempio una response HTTP con status code 302 ed header location impostato), il controllo non è più dell'applicazione stessa (ad esempio una single page application) ma il timone passa al browser. In questo caso la nostra applicazione deve conoscere una pagina di atterraggio dove poter propagare lo stato della richiesta che ha ricevuto
+
+image::./img/exception_redirect.png[]
+
+Le informazioni che propaghiamo sono le stesse, sta cambiando solo *il mezzo di propagazione*.
+Nel primo esempio stiamo rispondendo con una *response body* http, nel secondo come url request parameters.
+
+Definiamo innanzitutto la nostra risposta di errore, modificheremo la classe ApiException come segue:
+
+[source, java]
+----
+package com.example.demo.exception;
+
+import java.util.Objects;
+
+import org.springframework.http.HttpStatus;
+
+abstract class ApiException extends RuntimeException {
+
+    private HttpStatus status;
+    private ErrorCode errorcode;
+
+    public ApiException(HttpStatus status, ErrorCode errorcode) {
+        this.status = status;
+        this.errorcode = errorcode;
+    }
+
+    public ApiException() {
+    }
+
+    public HttpStatus getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public ErrorCode getErrorcode() {
+        return this.errorcode;
+    }
+
+    public void setErrorcode(ErrorCode errorcode) {
+        this.errorcode = errorcode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof ApiException)) {
+            return false;
+        }
+        ApiException apiException = (ApiException) o;
+        return Objects.equals(status, apiException.status) && Objects.equals(errorcode, apiException.errorcode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, errorcode);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                " status='" + getStatus() + "'" +
+                ", errorcode='" + getErrorcode() + "'" +
+                "}";
+    }
+
+}
+
+----
+
+l'abbiamo definita abstract perchè vogliamo in realtà estendere questa strutture per le reali eccezioni che la nostra applicazione dovrà gestire. Inoltre la classe ErrorCode e la sua struttura è stata definita in precedenza, non ha bisogno di alterazioni in quanto la sua implementazione già trasporta le informazioni che ci servono.
+
+A questo punto implementiamo la nostra classe *ApplicationExceptionHandler* nel subpackage *exception*:
+
+[source, java]
+----
+package com.example.demo.exception;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+@ControllerAdvice
+public class ApplicationExceptionHandler
+    extends ResponseEntityExceptionHandler {
+
+  @ExceptionHandler(value = { ApiException.class })
+  protected ResponseEntity<ApiException> handleAPIConflict(
+      RuntimeException ex, WebRequest request) {
+    ApiException exception = (ApiException) ex;
+    return ResponseEntity.status(exception.getStatus()).body(exception);
+  }
+}
+
+----
+
+Il @ControllerAdvice dichiara una classe il cui comportamento è simile a quello di una classe controller classica. Contrariamente a quando fino fino ad ora non reagisce a determinate richieste HTTP ricevite dal webserver embedded Tomcat, bensì si mette in _ascolto_ di determinate eccezioni e provvede alla loro gestione tramite un handler definito come metodo java.
+
+Il nostro handler riceve in ingresso una RuntimeException (superclasse di ApiException) ed un oggetto WebRequest, ossia un wrapper della richiesta web ricevuta inizialmente.
+
+La risposta viene confezionata all'interno di una ResponseEntity, ed utilizzeremo le informazioni contenute all'interno della nostra classe ApiException per costruirla, ossia passando a ResponseEntity.status l'HttpStatus contenuti nell'eccezione e come corpo della risposta l'eccezione stessa.
+
+Il nostro lavoro non è ancora finito! ApiException è una classe astratta è pertanto deve essere definita in maniera opportuna da una classe più specifica, definiamo dunque una classe
+*NotFoundException* per adempiere a questo scopo:
+
+[source, java]
+----
+package com.example.demo.exception;
+
+import org.springframework.http.HttpStatus;
+
+public class NotFoundException extends ApiException{
+
+    public NotFoundException(ErrorCode e){
+        super(HttpStatus.NOT_FOUND, e);
+    }
+    
+}
+----
+
+Una classe molto concisa, ma serve al nostro scopo, in questo caso l'unico argomento del costruttore sarà proprio l'ErrorCode, lo stato HTTP è dunque impostato staticamente in quanto rappresentante il dominio stesso della nostra classe NotFoundException.
+
+proviamo dunque a creare una nostra API su un controller di prova che effettui il throw di un'eccezione di questo tipo.
+----
+curl http://localhost:8080/testexception
+----
+[source, json]
+----
+{
+    "cause": null,
+    "stackTrace": [
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "testExceptionHandler",
+            "fileName": "HelloWorldController.java",
+            "lineNumber": 29,
+            "nativeMethod": false,
+            "className": "com.example.demo.controller.HelloWorldController"
+        },
+        {
+            "classLoaderName": null,
+            "moduleName": "java.base",
+            "moduleVersion": "17.0.4",
+            "methodName": "invoke0",
+            "fileName": "NativeMethodAccessorImpl.java",
+            "lineNumber": -2,
+            "nativeMethod": true,
+            "className": "jdk.internal.reflect.NativeMethodAccessorImpl"
+        },
+        {
+            "classLoaderName": null,
+            "moduleName": "java.base",
+            "moduleVersion": "17.0.4",
+            "methodName": "invoke",
+            "fileName": "NativeMethodAccessorImpl.java",
+            "lineNumber": 77,
+            "nativeMethod": false,
+            "className": "jdk.internal.reflect.NativeMethodAccessorImpl"
+        },
+        {
+            "classLoaderName": null,
+            "moduleName": "java.base",
+            "moduleVersion": "17.0.4",
+            "methodName": "invoke",
+            "fileName": "DelegatingMethodAccessorImpl.java",
+            "lineNumber": 43,
+            "nativeMethod": false,
+            "className": "jdk.internal.reflect.DelegatingMethodAccessorImpl"
+        },
+        {
+            "classLoaderName": null,
+            "moduleName": "java.base",
+            "moduleVersion": "17.0.4",
+            "methodName": "invoke",
+            "fileName": "Method.java",
+            "lineNumber": 568,
+            "nativeMethod": false,
+            "className": "java.lang.reflect.Method"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doInvoke",
+            "fileName": "InvocableHandlerMethod.java",
+            "lineNumber": 205,
+            "nativeMethod": false,
+            "className": "org.springframework.web.method.support.InvocableHandlerMethod"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invokeForRequest",
+            "fileName": "InvocableHandlerMethod.java",
+            "lineNumber": 150,
+            "nativeMethod": false,
+            "className": "org.springframework.web.method.support.InvocableHandlerMethod"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invokeAndHandle",
+            "fileName": "ServletInvocableHandlerMethod.java",
+            "lineNumber": 117,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invokeHandlerMethod",
+            "fileName": "RequestMappingHandlerAdapter.java",
+            "lineNumber": 895,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "handleInternal",
+            "fileName": "RequestMappingHandlerAdapter.java",
+            "lineNumber": 808,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "handle",
+            "fileName": "AbstractHandlerMethodAdapter.java",
+            "lineNumber": 87,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doDispatch",
+            "fileName": "DispatcherServlet.java",
+            "lineNumber": 1071,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.DispatcherServlet"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doService",
+            "fileName": "DispatcherServlet.java",
+            "lineNumber": 964,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.DispatcherServlet"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "processRequest",
+            "fileName": "FrameworkServlet.java",
+            "lineNumber": 1006,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.FrameworkServlet"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doGet",
+            "fileName": "FrameworkServlet.java",
+            "lineNumber": 898,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.FrameworkServlet"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "service",
+            "fileName": "HttpServlet.java",
+            "lineNumber": 655,
+            "nativeMethod": false,
+            "className": "javax.servlet.http.HttpServlet"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "service",
+            "fileName": "FrameworkServlet.java",
+            "lineNumber": 883,
+            "nativeMethod": false,
+            "className": "org.springframework.web.servlet.FrameworkServlet"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "service",
+            "fileName": "HttpServlet.java",
+            "lineNumber": 764,
+            "nativeMethod": false,
+            "className": "javax.servlet.http.HttpServlet"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "internalDoFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 227,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 162,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "WsFilter.java",
+            "lineNumber": 53,
+            "nativeMethod": false,
+            "className": "org.apache.tomcat.websocket.server.WsFilter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "internalDoFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 189,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 162,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilterInternal",
+            "fileName": "RequestContextFilter.java",
+            "lineNumber": 100,
+            "nativeMethod": false,
+            "className": "org.springframework.web.filter.RequestContextFilter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "OncePerRequestFilter.java",
+            "lineNumber": 117,
+            "nativeMethod": false,
+            "className": "org.springframework.web.filter.OncePerRequestFilter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "internalDoFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 189,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 162,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilterInternal",
+            "fileName": "FormContentFilter.java",
+            "lineNumber": 93,
+            "nativeMethod": false,
+            "className": "org.springframework.web.filter.FormContentFilter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "OncePerRequestFilter.java",
+            "lineNumber": 117,
+            "nativeMethod": false,
+            "className": "org.springframework.web.filter.OncePerRequestFilter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "internalDoFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 189,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 162,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilterInternal",
+            "fileName": "CharacterEncodingFilter.java",
+            "lineNumber": 201,
+            "nativeMethod": false,
+            "className": "org.springframework.web.filter.CharacterEncodingFilter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "OncePerRequestFilter.java",
+            "lineNumber": 117,
+            "nativeMethod": false,
+            "className": "org.springframework.web.filter.OncePerRequestFilter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "internalDoFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 189,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doFilter",
+            "fileName": "ApplicationFilterChain.java",
+            "lineNumber": 162,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.ApplicationFilterChain"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invoke",
+            "fileName": "StandardWrapperValve.java",
+            "lineNumber": 197,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.StandardWrapperValve"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invoke",
+            "fileName": "StandardContextValve.java",
+            "lineNumber": 97,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.StandardContextValve"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invoke",
+            "fileName": "AuthenticatorBase.java",
+            "lineNumber": 541,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.authenticator.AuthenticatorBase"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invoke",
+            "fileName": "StandardHostValve.java",
+            "lineNumber": 135,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.StandardHostValve"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invoke",
+            "fileName": "ErrorReportValve.java",
+            "lineNumber": 92,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.valves.ErrorReportValve"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "invoke",
+            "fileName": "StandardEngineValve.java",
+            "lineNumber": 78,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.core.StandardEngineValve"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "service",
+            "fileName": "CoyoteAdapter.java",
+            "lineNumber": 360,
+            "nativeMethod": false,
+            "className": "org.apache.catalina.connector.CoyoteAdapter"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "service",
+            "fileName": "Http11Processor.java",
+            "lineNumber": 399,
+            "nativeMethod": false,
+            "className": "org.apache.coyote.http11.Http11Processor"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "process",
+            "fileName": "AbstractProcessorLight.java",
+            "lineNumber": 65,
+            "nativeMethod": false,
+            "className": "org.apache.coyote.AbstractProcessorLight"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "process",
+            "fileName": "AbstractProtocol.java",
+            "lineNumber": 890,
+            "nativeMethod": false,
+            "className": "org.apache.coyote.AbstractProtocol$ConnectionHandler"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "doRun",
+            "fileName": "NioEndpoint.java",
+            "lineNumber": 1789,
+            "nativeMethod": false,
+            "className": "org.apache.tomcat.util.net.NioEndpoint$SocketProcessor"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "run",
+            "fileName": "SocketProcessorBase.java",
+            "lineNumber": 49,
+            "nativeMethod": false,
+            "className": "org.apache.tomcat.util.net.SocketProcessorBase"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "runWorker",
+            "fileName": "ThreadPoolExecutor.java",
+            "lineNumber": 1191,
+            "nativeMethod": false,
+            "className": "org.apache.tomcat.util.threads.ThreadPoolExecutor"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "run",
+            "fileName": "ThreadPoolExecutor.java",
+            "lineNumber": 659,
+            "nativeMethod": false,
+            "className": "org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker"
+        },
+        {
+            "classLoaderName": "app",
+            "moduleName": null,
+            "moduleVersion": null,
+            "methodName": "run",
+            "fileName": "TaskThread.java",
+            "lineNumber": 61,
+            "nativeMethod": false,
+            "className": "org.apache.tomcat.util.threads.TaskThread$WrappingRunnable"
+        },
+        {
+            "classLoaderName": null,
+            "moduleName": "java.base",
+            "moduleVersion": "17.0.4",
+            "methodName": "run",
+            "fileName": "Thread.java",
+            "lineNumber": 833,
+            "nativeMethod": false,
+            "className": "java.lang.Thread"
+        }
+    ],
+    "status": "NOT_FOUND",
+    "errorcode": "APP_ERROR",
+    "message": null,
+    "suppressed": [],
+    "localizedMessage": null
+}
+----
+
+Uno stack trace completo e molto verboso! Per le nostre esigenze però è un po' troppo, non dimentichiamoci inoltre che il processo di serializzazione è impegnativo per il nostro software, quindi cerchiamo di limitare all'essenziale i dati che devono essere convertiti.
+
+Creiamo quindi una semplice classe *ApiExceptionResponse*:
+[source, java]
+----
+package com.example.demo.exception;
+
+import java.util.Objects;
+
+public class ApiExceptionResponse {
+    
+    private Integer httpCode;
+    private String httpStatus;
+    private String erroreCode;
+    private String errorMessage;
+
+    public ApiExceptionResponse(ApiException e){
+        this.httpCode = e.getStatus().value();
+        this.httpStatus = e.getStatus().name();
+        this.erroreCode = e.getErrorCode().toString();
+        this.errorMessage = e.getErrorCode().getDescription();
+    }
+    public Integer getHttpCode() {
+        return this.httpCode;
+    }
+
+    public void setHttpCode(Integer httpCode) {
+        this.httpCode = httpCode;
+    }
+
+    public String getHttpStatus() {
+        return this.httpStatus;
+    }
+
+    public void setHttpStatus(String httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
+    public String getErroreCode() {
+        return this.erroreCode;
+    }
+
+    public void setErroreCode(String erroreCode) {
+        this.erroreCode = erroreCode;
+    }
+
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof ApiExceptionResponse)) {
+            return false;
+        }
+        ApiExceptionResponse apiExceptionResponse = (ApiExceptionResponse) o;
+        return Objects.equals(httpCode, apiExceptionResponse.httpCode) && Objects.equals(httpStatus, apiExceptionResponse.httpStatus) && Objects.equals(erroreCode, apiExceptionResponse.erroreCode) && Objects.equals(errorMessage, apiExceptionResponse.errorMessage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(httpCode, httpStatus, erroreCode, errorMessage);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+            " httpCode='" + getHttpCode() + "'" +
+            ", httpStatus='" + getHttpStatus() + "'" +
+            ", erroreCode='" + getErroreCode() + "'" +
+            ", errorMessage='" + getErrorMessage() + "'" +
+            "}";
+    }
+
+}
+
+----
+
+Abbiamo inserito al suo interno i soli parametri che ci interessa restituire al chiamante. L'unico costruttore disponibile è quello che accetta in ingresso l'ApiException sopra citata, utilizzeremo i suoi campi per costruire la risposta.
+
+A questo punto dobbiamo modificare l'handler della classe ApplicationExceptionHandler affinchè restituisca una *ApiExceptionResponse*
+
+[source, java]
+----
+package com.example.demo.exception;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+@ControllerAdvice
+public class ApplicationExceptionHandler
+    extends ResponseEntityExceptionHandler {
+
+  @ExceptionHandler(value = { ApiException.class })
+  protected ResponseEntity<ApiExceptionResponse> handleAPIConflict(
+      RuntimeException ex, WebRequest request) {
+    ApiException exception = (ApiException) ex;
+    return ResponseEntity
+      .status(exception.getStatus())
+      .body(
+        new ApiExceptionResponse(exception)
+      );
+  }
+}
+----
+
+effettuiamo infine un test:
+
+[source, shell]
+----
+$ curl http://localhost:8080/testexception
+{"httpCode":404,"httpStatus":"NOT_FOUND","erroreCode":"APP_ERROR","errorMessage":"CUSTOM_APP_ERROR"}
+----
+
+
+
 === Esercizi
 
 ==== 2.1
@@ -1390,7 +2210,7 @@ Risposta attesa:
 
 [source, json]
 ----
-{"timestamp":"2022-10-12T13:30:23.304+00:00","status":404,"error":"Not Found","path":"/testexception"}
+{"timestamp":"2022-10-12T13:30:23.304+00:00","status":404,"error":"Not Found","path":"/employee/{matricola}"}
 ----
 
 ==== 2.3

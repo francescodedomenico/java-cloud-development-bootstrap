@@ -1,0 +1,5 @@
+@startuml
+Client -> Service: GET /API
+Service --> Service: Eccezione generata
+Service --> Client: 404 NOT_FOUND {"http_code": 404}
+@enduml
