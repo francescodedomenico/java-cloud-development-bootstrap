@@ -4,6 +4,7 @@ Francesco De Domenico
 :source-highlighter: rouge
 :icons: font
 :doctype: book
+:stem:
 
 == Introduzione
 
@@ -2383,7 +2384,52 @@ Questo conclude la parte di gestione delle eccezioni. Abbiamo introdotto uno str
 
 === Integrazione con servizi esterni
 
+Un buon microservizio, in linea generale, non dovrebbe avere forti dipendenze da servizi esterni. Le architetture a microservizi nascono per garantire ad entità fornitrici di servizi di essere resilienti ai guasti e rispondere sempre alle proprie utenze.
 
+Questa caratteristica molto desiderabile, e che ha reso l'adoption di infrastrutture cloud, containerizzate e distribuite un approccio ormai consolidato per chiunque voglia erogare servizi attraverso un'infrastruttura di calcolo, è detta *High Availability* od *HA*, ossia alta disponibilità.
+
+In italiano spesso ci si riferisce in maniera impropria a questo concetto come *Alta Affidabilità*, tuttavia l'alta affidabilità e l'alta disponibilità sono relative a due diverse grandezze statistiche che sarebbe meglio non confondere.
+
+[quote]
+====
+La disponibilità rappresenta quanto un sistema sia stato in grado di erogare servizio in codizioni normali al netto dei disservizi, è spesso rappresentata come una percentuale legata ad una specifica finestra temporale
+====
+
+data una finestra temporale delimitata dagli istanti iniziali e finali stem:[t_0] e stem:[t_i]
+si definisce l'availability come rapporto percentuale:
+
+stem:[0 <= Availability=(TotalServiceTime(t_0, t_i)- sum_(y=1)^n FailTime_y(t_0, t_i))/(TotalServiceTime(t_0, t_i)) <= 1] 
+
+l'affidabilità è una grandezza soggettiva, dipendente dalla mission objective aziendale e tipicamente legata ad una grandezza statistica detta *Mean Time Between Failures*
+
+stem:[MTBF = (TotalServiceTime(t_0, t_i) - MeanTimeToRepair(t_0,t_i))/(NumberOfFailures(t_0,t_i))]
+
+Ossia il tempo di servizio normalizzato per numero di blackout al netto della somma totale dei tempi di interruzione.
+
+Formule matematiche a parte, possiamo rendere ancora più esplicito il distinguo tra le due grandezze.
+
+Ipotizziamo che la nostra azienda gestisca voli aerei di Linea e che abbia moltissimi aerei pronti al volo in hangar, inoltre ha sempre a disposizione personale per poter mettere in esercizio un aereo in hangar in tempi brevissimi.
+
+L'azienda ha osservato che ogni volo di linea, durante l'esercizio, presenta un'avaria con probabilità del 50%.
+
+Se confodessimo alta affidabilità con alta disponibilità sarebbe come dire che la compagnia, pur avendo 1 volo su 2 in avaria, è affidabile perchè ha sempre un aereo di linea pronto a partire in caso di incidente!
+
+Questo preambolo serve a farci comprendere perchè le integrazioni esterne sono un argomento da trattare con le dovute attenzioni ed è per questa ragione che nel capitolo precedente abbiamo introdotto la gestione delle eccezioni.
+
+
+
+Rendere un microservizio *dipendente* da un altro significa aver creato un accoppiamento funzionale tra due entità, e quindi il funzionamento di una è condizione necessaria (ma non sufficiente) per il funzionamento dell'altra.
+
+Immaginiamo che il microservizio A sia dipendente per parte del suo funzionamento dal microservizio B, ed il microservizio B sia dipendente per il suo funzionamento dai microservizi C, D, E.
+
+image::./img/integrations.png[]
+
+Immaginiamo che il nostro servizio sia il servizio A, questo servizio è soggetto alle medesime condizioni di affidabilità e disponibilità non solo del servizio B, ma anche di C, D ed E.
+
+Non solo, in fase di progettazione di tale microservizio, quando ci viene chiesto di garantire alta affidabilità e disponibilità dello stesso è bene ricordarsi che:
+
+"Possiamo nella migliore delle ipotesi *garantire alta affidabilità ed alta disponibiltà* quanto riesce a garantire la dipendenza con la *peggiore* di queste grandezze."
+-- Java Cloud Development Bootstrap
 
 
 === Esercizi
