@@ -691,8 +691,12 @@ pre.rouge {
 <li><a href="#_component">@Component</a></li>
 <li><a href="#_configuration">@Configuration</a></li>
 <li><a href="#_exception_handling">Exception Handling</a></li>
-<li><a href="#_integrazione_con_servizi_esterni">Integrazione con servizi esterni</a></li>
 <li><a href="#_esercizi">Esercizi</a></li>
+</ul>
+</li>
+<li><a href="#_capitolo_3_integrazione_con_servizi_esterni">Capitolo 3: Integrazione con servizi esterni</a>
+<ul class="sectlevel2">
+<li><a href="#_rest_integration">REST integration</a></li>
 </ul>
 </li>
 <li><a href="#_soluzioni">Soluzioni</a></li>
@@ -3771,7 +3775,7 @@ Notiamo innanzitutto che non stiamo utilizzado una ResponseEntity come return ma
 <div class="paragraph">
 <p>Proviamo ad inserire l&#8217;url nella barra degli indirizzi:</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/redirect_1.jpg" alt="redirect 1">
 </div>
@@ -3779,7 +3783,7 @@ Notiamo innanzitutto che non stiamo utilizzado una ResponseEntity come return ma
 <div class="paragraph">
 <p>ad un&#8217;analisi distratta sembrerebbe che il nostro software non stia funzionando, effettuiamo nuovamente la chiamata utilizzando il code inspector del browser aperto in modalità network:</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/redirect_inspect_1.jpg" alt="redirect inspect 1">
 </div>
@@ -3825,81 +3829,6 @@ Notiamo innanzitutto che non stiamo utilizzado una ResponseEntity come return ma
 </div>
 <div class="paragraph">
 <p>Questo conclude la parte di gestione delle eccezioni. Abbiamo introdotto uno strumento fondamentale che ci tornerà molto utile quando dobbiamo integrarci con altri servizi, e sarà proprio questo l&#8217;oggetto del prossimo capitolo.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_integrazione_con_servizi_esterni">Integrazione con servizi esterni</h3>
-<div class="paragraph">
-<p>Un buon microservizio, in linea generale, non dovrebbe avere forti dipendenze da servizi esterni. Le architetture a microservizi nascono per garantire ad entità fornitrici di servizi di essere resilienti ai guasti e rispondere sempre alle proprie utenze.</p>
-</div>
-<div class="paragraph">
-<p>Questa caratteristica molto desiderabile, e che ha reso l&#8217;adoption di infrastrutture cloud, containerizzate e distribuite un approccio ormai consolidato per chiunque voglia erogare servizi attraverso un&#8217;infrastruttura di calcolo, è detta <strong>High Availability</strong> od <strong>HA</strong>, ossia alta disponibilità.</p>
-</div>
-<div class="paragraph">
-<p>In italiano spesso ci si riferisce in maniera impropria a questo concetto come <strong>Alta Affidabilità</strong>, tuttavia l&#8217;alta affidabilità e l&#8217;alta disponibilità sono relative a due diverse grandezze statistiche che sarebbe meglio non confondere.</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p>La disponibilità rappresenta quanto un sistema sia stato in grado di erogare servizio in codizioni normali al netto dei disservizi, è spesso rappresentata come una percentuale legata ad una specifica finestra temporale</p>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>data una finestra temporale delimitata dagli istanti iniziali e finali \$t_0\$ e \$t_i\$
-si definisce l&#8217;availability come rapporto percentuale:</p>
-</div>
-<div class="paragraph">
-<p>\$0 &lt;= Availability=(TotalServiceTime(t_0, t_i)- sum_(y=1)^n FailTime_y(t_0, t_i))/(TotalServiceTime(t_0, t_i)) &lt;= 1\$</p>
-</div>
-<div class="paragraph">
-<p>l&#8217;affidabilità è una grandezza soggettiva, dipendente dalla mission objective aziendale e tipicamente legata ad una grandezza statistica detta <strong>Mean Time Between Failures</strong></p>
-</div>
-<div class="paragraph">
-<p>\$MTBF = (TotalServiceTime(t_0, t_i) - MeanTimeToRepair(t_0,t_i))/(NumberOfFailures(t_0,t_i))\$</p>
-</div>
-<div class="paragraph">
-<p>Ossia il tempo di servizio normalizzato per numero di blackout al netto della somma totale dei tempi di interruzione.</p>
-</div>
-<div class="paragraph">
-<p>Formule matematiche a parte, possiamo rendere ancora più esplicito il distinguo tra le due grandezze.</p>
-</div>
-<div class="paragraph">
-<p>Ipotizziamo che la nostra azienda gestisca voli aerei di Linea e che abbia moltissimi aerei pronti al volo in hangar, inoltre ha sempre a disposizione personale per poter mettere in esercizio un aereo in hangar in tempi brevissimi.</p>
-</div>
-<div class="paragraph">
-<p>L&#8217;azienda ha osservato che ogni volo di linea, durante l&#8217;esercizio, presenta un&#8217;avaria con probabilità del 50%.</p>
-</div>
-<div class="paragraph">
-<p>Se confodessimo alta affidabilità con alta disponibilità sarebbe come dire che la compagnia, pur avendo 1 volo su 2 in avaria, è affidabile perchè ha sempre un aereo di linea pronto a partire in caso di incidente!</p>
-</div>
-<div class="paragraph">
-<p>Questo preambolo serve a farci comprendere perchè le integrazioni esterne sono un argomento da trattare con le dovute attenzioni ed è per questa ragione che nel capitolo precedente abbiamo introdotto la gestione delle eccezioni.</p>
-</div>
-<div class="paragraph">
-<p>Rendere un microservizio <strong>dipendente</strong> da un altro significa aver creato un accoppiamento funzionale tra due entità, e quindi il funzionamento di una è condizione necessaria (ma non sufficiente) per il funzionamento dell&#8217;altra.</p>
-</div>
-<div class="paragraph">
-<p>Immaginiamo che il microservizio A sia dipendente per parte del suo funzionamento dal microservizio B, ed il microservizio B sia dipendente per il suo funzionamento dai microservizi C, D, E.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="./img/integrations.png" alt="integrations">
-</div>
-</div>
-<div class="paragraph">
-<p>Immaginiamo che il nostro servizio sia il servizio A, questo servizio è soggetto alle medesime condizioni di affidabilità e disponibilità non solo del servizio B, ma anche di C, D ed E.</p>
-</div>
-<div class="paragraph">
-<p>Non solo, in fase di progettazione di tale microservizio, quando ci viene chiesto di garantire alta affidabilità e disponibilità dello stesso è bene ricordarsi che:</p>
-</div>
-<div class="quoteblock">
-<blockquote>
-Possiamo nella migliore delle ipotesi <strong>garantire alta affidabilità ed alta disponibiltà</strong> quanto riesce a garantire la dipendenza con la <strong>peggiore</strong> di queste grandezze.
-</blockquote>
-<div class="attribution">
-&#8212; Java Cloud Development Bootstrap
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -4003,6 +3932,89 @@ Possiamo nella migliore delle ipotesi <strong>garantire alta affidabilità ed al
 </div>
 </div>
 <div class="sect1">
+<h2 id="_capitolo_3_integrazione_con_servizi_esterni">Capitolo 3: Integrazione con servizi esterni</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Un buon microservizio, in linea generale, non dovrebbe avere forti dipendenze da servizi esterni. Le architetture a microservizi nascono per garantire ad entità fornitrici di servizi di essere resilienti ai guasti e rispondere sempre alle proprie utenze.</p>
+</div>
+<div class="paragraph">
+<p>Questa caratteristica molto desiderabile, e che ha reso l&#8217;adoption di infrastrutture cloud, containerizzate e distribuite un approccio ormai consolidato per chiunque voglia erogare servizi attraverso un&#8217;infrastruttura di calcolo, è detta <strong>High Availability</strong> od <strong>HA</strong>, ossia alta disponibilità.</p>
+</div>
+<div class="paragraph">
+<p>In italiano spesso ci si riferisce in maniera impropria a questo concetto come <strong>Alta Affidabilità</strong>, tuttavia l&#8217;alta affidabilità e l&#8217;alta disponibilità sono relative a due diverse grandezze statistiche che sarebbe meglio non confondere.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>La disponibilità rappresenta quanto un sistema sia stato in grado di erogare servizio in codizioni normali al netto dei disservizi, è spesso rappresentata come una percentuale legata ad una specifica finestra temporale</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>data una finestra temporale delimitata dagli istanti iniziali e finali \$t_0\$ e \$t_i\$
+si definisce l&#8217;availability come rapporto percentuale:</p>
+</div>
+<div class="paragraph">
+<p>\$0 &lt;= Availability=(TotalServiceTime(t_0, t_i)- sum_(y=1)^n FailTime_y(t_0, t_i))/(TotalServiceTime(t_0, t_i)) &lt;= 1\$</p>
+</div>
+<div class="paragraph">
+<p>l&#8217;affidabilità è una grandezza soggettiva, dipendente dalla mission objective aziendale e tipicamente legata ad una grandezza statistica detta <strong>Mean Time Between Failures</strong></p>
+</div>
+<div class="paragraph">
+<p>\$MTBF = (TotalServiceTime(t_0, t_i) - MeanTimeToRepair(t_0,t_i))/(NumberOfFailures(t_0,t_i))\$</p>
+</div>
+<div class="paragraph">
+<p>Ossia il tempo di servizio normalizzato per numero di blackout al netto della somma totale dei tempi di interruzione.</p>
+</div>
+<div class="paragraph">
+<p>Formule matematiche a parte, possiamo rendere ancora più esplicito il distinguo tra le due grandezze.</p>
+</div>
+<div class="paragraph">
+<p>Ipotizziamo che la nostra azienda gestisca voli aerei di Linea e che abbia moltissimi aerei pronti al volo in hangar, inoltre ha sempre a disposizione personale per poter mettere in esercizio un aereo in hangar in tempi brevissimi.</p>
+</div>
+<div class="paragraph">
+<p>L&#8217;azienda ha osservato che ogni volo di linea, durante l&#8217;esercizio, presenta un&#8217;avaria con probabilità del 50%.</p>
+</div>
+<div class="paragraph">
+<p>Se confodessimo alta affidabilità con alta disponibilità sarebbe come dire che la compagnia, pur avendo 1 volo su 2 in avaria, è affidabile perchè ha sempre un aereo di linea pronto a partire in caso di incidente!</p>
+</div>
+<div class="paragraph">
+<p>Questo preambolo serve a farci comprendere perchè le integrazioni esterne sono un argomento da trattare con le dovute attenzioni ed è per questa ragione che nel capitolo precedente abbiamo introdotto la gestione delle eccezioni.</p>
+</div>
+<div class="paragraph">
+<p>Rendere un microservizio <strong>dipendente</strong> da un altro significa aver creato un accoppiamento funzionale tra due entità, e quindi il funzionamento di una è condizione necessaria (ma non sufficiente) per il funzionamento dell&#8217;altra.</p>
+</div>
+<div class="paragraph">
+<p>Immaginiamo che il microservizio A sia dipendente per parte del suo funzionamento dal microservizio B, ed il microservizio B sia dipendente per il suo funzionamento dai microservizi C, D, E.</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./img/integrations.png" alt="integrations">
+</div>
+</div>
+<div class="paragraph">
+<p>Immaginiamo che il nostro servizio sia il servizio A, questo servizio è soggetto alle medesime condizioni di affidabilità e disponibilità non solo del servizio B, ma anche di C, D ed E.</p>
+</div>
+<div class="paragraph">
+<p>Non solo, in fase di progettazione di tale microservizio, quando ci viene chiesto di garantire alta affidabilità e disponibilità dello stesso è bene ricordarsi che:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+Possiamo nella migliore delle ipotesi <strong>garantire alta affidabilità ed alta disponibiltà</strong> quanto riesce a garantire la dipendenza con la <strong>peggiore</strong> di queste grandezze.
+</blockquote>
+<div class="attribution">
+&#8212; Java Cloud Development Bootstrap
+</div>
+</div>
+<div class="sect2">
+<h3 id="_rest_integration">REST integration</h3>
+<div class="paragraph">
+<p>Possiamo</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_soluzioni">Soluzioni</h2>
 <div class="sectionbody">
 <div class="listingblock">
@@ -4027,7 +4039,7 @@ Possiamo nella migliore delle ipotesi <strong>garantire alta affidabilità ed al
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-17 09:37:31 +0200
+Last updated 2022-10-17 09:44:05 +0200
 </div>
 </div>
 <script type="text/x-mathjax-config">
