@@ -2458,6 +2458,52 @@ Risposta attesa:
 
 Creare una eccezione Custom chiamata "ConflictException" che risalga all'utente nel caso in cui si effettui una addEmployee e l'impiegato esiste già.
 
+==== 2.4
+
+Abbiamo la necessità di restituire in risposta, in caso di eccezione, un corpo JSON customizzabile a seconda delle nostre esigenze, il client si aspetta di ricevere in risposta un oggetto JSON del tipo:
+
+[source, json]
+----
+{
+    "httpCode": 404,
+    "httpStatus": "NOT_FOUND",
+    "erroreCode": "APP_ERROR",
+    "errorMessage": "CUSTOM_APP_ERROR"
+}
+----
+
+In caso di risorsa assente/mancante.
+
+aggiornare la gestione delle eccezioni degli esercizi 2.3 e 2.4 in modo da restituire un messaggio strutturato come richiesto.
+
+==== 2.5
+
+Alcuni flussi sono spesso gestiti non da un client ma da uno UserAgent (es: browser Firefox/Chrome). Progettare una classe di eccezioni che fornisce ad un nuovo endpoint http://localhost:8080/redirect_page i parametri di errore dell'eccezione come delineati nell'esercizio 2.4.
+
+Perchè abbiamo bisogno di questo strumento talvolta? Perchè rispondere con un json body a volta non è possibile? Scrivere la risposta come Javadoc sull'intestazione della nuova classe di eccezioni.
+
+==== 2.6
+
+Spesso per motivi di sicurezza è meglio che alcune eccezioni restituite a frontend/client non forniscano troppe informazioni riguardo l'errore o l'anomalia riscontrata dal backend, tuttavia è comunque necessario fornire un set minimo di informazioni affichè il team di supporto ed application maintenance siano in grado di effettuare un'analisi dell'eccezione.
+
+Creare una nuova classe di eccezioni chiamata "ConfidentialException" che, una volta gestita, restituisca un set ridotto di informazioni al chiamante:
+
+[source, json]
+----
+{
+    "httpCode": 404,
+    "httpStatus": "NOT_FOUND",
+    "erroreCode": "APP_ERROR"
+}
+----
+
+deve essere effettuata la medesima astrazione anche per gli use case delineati nell'esercizio precedente.
+
+Aggiornare la gestione delle eccezioni http 404 e 409 degli esercizi precedenti in modo che siano gestite restituendo un set ridotto di informazioni.
+
+
+
+
 
 == Soluzioni
 
