@@ -1128,7 +1128,7 @@ Un archivio <strong>jar</strong> che contenga tutto il necessario senza bisogno 
 <div class="paragraph">
 <p>Spring offre un tool web per la generazione iniziale di un progetto Spring boot chiamato <a href="https://start.spring.io/">Spring initializr</a> attraverso il quale è possibile scegliere i parametri iniziali attraverso cui generare il nostro progetto.</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/springinitializr.png" alt="springinitializr">
 </div>
@@ -1200,7 +1200,7 @@ Un archivio <strong>jar</strong> che contenga tutto il necessario senza bisogno 
 <div class="paragraph">
 <p>Una volta generato il progetto su spring initializr avremo una struttura sul file system fatta in questo modo:</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/demoproject.png" alt="demoproject">
 </div>
@@ -1392,7 +1392,7 @@ la naming convention è molto importante per garantire la leggibilità del nostr
 <div class="paragraph">
 <p>Inizializziamo un nuovo progetto Spring da <a href="https://start.spring.io/">spring initializr</a> aggiungendo come dipendenza Spring Web</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/spring_web.jpg" alt="spring web">
 </div>
@@ -1463,7 +1463,7 @@ la naming convention è molto importante per garantire la leggibilità del nostr
 <pre class="rouge highlight"><code data-lang="shell"><span class="o">&gt;</span> mvn spring-boot:run</code></pre>
 </div>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/spring_started.jpg" alt="spring started">
 </div>
@@ -1582,7 +1582,7 @@ Per fare ciò abbiamo molti modi per farlo, ad esempio:</p>
 <div class="paragraph">
 <p>Proviamo dunque la nostra API:</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/hello_frenk_path_param.jpg" alt="hello frenk path param">
 </div>
@@ -1615,7 +1615,7 @@ Per fare ciò abbiamo molti modi per farlo, ad esempio:</p>
 <div class="paragraph">
 <p>Il codice è estremamente simile al precedente, tuttavia abbiamo annotato il parametro di input del metodo come @RequestParam, pertanto il webserver si attenderà questo parametro come query string paramenter.</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/hello_frenk_req_param.jpg" alt="hello frenk req param">
 </div>
@@ -2356,7 +2356,7 @@ Hello Francesco!</code></pre>
 <div class="paragraph">
 <p>Non appena inseriamo questa linea in application.properties vedremo che il nostro IDE (in questo caso VSCode) ci segnala il seguente messaggio:</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/appproperties_unkown.jpg" alt="appproperties unkown">
 </div>
@@ -2367,7 +2367,7 @@ Hello Francesco!</code></pre>
 <div class="paragraph">
 <p>Per fare ciò creeremo un nuovo file chiamato <strong>additional-spring-configuration-metadata.json</strong> all&#8217;interno della cartella ./src/main/resources/META-INF</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/appproperties_additional.jpg" alt="appproperties additional">
 </div>
@@ -2790,7 +2790,7 @@ A convenient base class for @ControllerAdvice classes that wish to provide centr
 <div class="paragraph">
 <p>Teniamo a mente che è possibile reagire agli errori in diversi modi, in questo modo la risposta viene ricevuta dal chiamante come corpo di risposta HTTP, chi riceve questo emssagio è quindi in grado di interpretarlo e di gestirlo in maniera opportuna. Per esempio un client javascript in esecuzione sul browser può mostrare un popup, una notifica ed una modale. Stessa cosa per un client mobile.</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/exception_http.png" alt="exception http">
 </div>
@@ -2807,7 +2807,7 @@ A convenient base class for @ControllerAdvice classes that wish to provide centr
 <div class="paragraph">
 <p>In un browser, quando viene ricevuta una redirect (ad esempio una response HTTP con status code 302 ed header location impostato), il controllo non è più dell&#8217;applicazione stessa (ad esempio una single page application) ma il timone passa al browser. In questo caso la nostra applicazione deve conoscere una pagina di atterraggio dove poter propagare lo stato della richiesta che ha ricevuto</p>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/exception_redirect.png" alt="exception redirect">
 </div>
@@ -3819,7 +3819,7 @@ Notiamo innanzitutto che non stiamo utilizzado una ResponseEntity come return ma
 <span class="o">}</span></code></pre>
 </div>
 </div>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
 <img src="./img/redirect_ok.jpg" alt="redirect ok">
 </div>
@@ -4008,8 +4008,102 @@ Possiamo nella migliore delle ipotesi <strong>garantire alta affidabilità ed al
 </div>
 <div class="sect2">
 <h3 id="_rest_integration">REST integration</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
 <div class="paragraph">
-<p>Possiamo</p>
+<p>Letture consigliate:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.html">Webclient Javadoc</a></p>
+</li>
+<li>
+<p><a href="https://www.baeldung.com/spring-5-webclient">WebClient on Baeldung</a></p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Spring possiede un articolato ecosistema di librerie per poterci mettere in comunicazione con altri servizi. A partire da Spring 5 la libreria di riferimento per le comunicazioni HTTP è <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.html"><strong>WebClient</strong></a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+Non-blocking, reactive client to perform HTTP requests, exposing a fluent, reactive API over underlying HTTP client libraries such as Reactor Netty.
+</blockquote>
+<div class="attribution">
+&#8212; Webclient Javadoc
+</div>
+</div>
+<div class="paragraph">
+<p>Il primo passo propedeutico al suo utilizzo consiste nell&#8217;importare la dipendenza</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-webflux<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Successivamente è opportuno scegliere/creare un nuovo package dove sia possibile collocare tutte le integrazioni esterne al nostro servizio, ad esempio: <strong>com.example.demo.client</strong>. Ogni servizio esterno avra un suo package dedicato in modo da isolare le componenti necessarie al suo funzionamento dal resto del software es: <strong>com.example.demo.client.extservicea</strong></p>
+</div>
+<div class="paragraph">
+<p>Effettuare una chiamata HTTP con WebClient prevede diverse fasi, principalmente:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Costruzione di WebClient</p>
+</li>
+<li>
+<p>Preparazione della richiesta</p>
+</li>
+<li>
+<p>Elaborazione della risposta (con gestione eccezioni)</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>L&#8217;istanza di WebClient che costruiremo è la classe genitrice della nostra integrazione, in particolare le configurazioni come timeouts, header di default, host predefinito e così via verranno ereditate da tutte le altre richieste che genereremo attraverso questa istanza:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">WebClient</span> <span class="n">client</span> <span class="o">=</span> <span class="nc">WebClient</span><span class="o">.</span><span class="na">create</span><span class="o">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>per creare un&#8217;istanza vuota oppure:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">WebClient</span> <span class="n">client</span> <span class="o">=</span> <span class="nc">WebClient</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">"http://localhost:8080"</span><span class="o">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>per creare un&#8217;istanza che faccia riferimento ad un prefissato host e porta oppure:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">WebClient</span> <span class="n">client</span> <span class="o">=</span> <span class="nc">WebClient</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
+  <span class="o">.</span><span class="na">baseUrl</span><span class="o">(</span><span class="s">"http://localhost:8080"</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">defaultCookie</span><span class="o">(</span><span class="s">"cookieKey"</span><span class="o">,</span> <span class="s">"cookieValue"</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">defaultHeader</span><span class="o">(</span><span class="nc">HttpHeaders</span><span class="o">.</span><span class="na">CONTENT_TYPE</span><span class="o">,</span> <span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON_VALUE</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">defaultUriVariables</span><span class="o">(</span><span class="nc">Collections</span><span class="o">.</span><span class="na">singletonMap</span><span class="o">(</span><span class="s">"url"</span><span class="o">,</span> <span class="s">"http://localhost:8080"</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">build</span><span class="o">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>per customizzare completamente la nostra istanza tramite l&#8217;ausilio del Java Builder, di cui consigliamo di consultare la <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.Builder.html">documentazione java</a></p>
 </div>
 </div>
 </div>
@@ -4039,7 +4133,7 @@ Possiamo nella migliore delle ipotesi <strong>garantire alta affidabilità ed al
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-17 09:44:05 +0200
+Last updated 2022-12-06 09:56:13 +0100
 </div>
 </div>
 <script type="text/x-mathjax-config">

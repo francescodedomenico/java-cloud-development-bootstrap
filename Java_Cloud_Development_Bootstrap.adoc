@@ -2486,8 +2486,6 @@ Se confodessimo alta affidabilità con alta disponibilità sarebbe come dire che
 
 Questo preambolo serve a farci comprendere perchè le integrazioni esterne sono un argomento da trattare con le dovute attenzioni ed è per questa ragione che nel capitolo precedente abbiamo introdotto la gestione delle eccezioni.
 
-
-
 Rendere un microservizio *dipendente* da un altro significa aver creato un accoppiamento funzionale tra due entità, e quindi il funzionamento di una è condizione necessaria (ma non sufficiente) per il funzionamento dell'altra.
 
 Immaginiamo che il microservizio A sia dipendente per parte del suo funzionamento dal microservizio B, ed il microservizio B sia dipendente per il suo funzionamento dai microservizi C, D, E.
@@ -2502,14 +2500,68 @@ Non solo, in fase di progettazione di tale microservizio, quando ci viene chiest
 -- Java Cloud Development Bootstrap
 
 
+
 === REST integration
 
-Possiamo
+[TIP]
+====
+Letture consigliate:
+
+* https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.html[Webclient Javadoc]
+* https://www.baeldung.com/spring-5-webclient[WebClient on Baeldung]
+====
+
+Spring possiede un articolato ecosistema di librerie per poterci mettere in comunicazione con altri servizi. A partire da Spring 5 la libreria di riferimento per le comunicazioni HTTP è https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.html[*WebClient*]
+
+"Non-blocking, reactive client to perform HTTP requests, exposing a fluent, reactive API over underlying HTTP client libraries such as Reactor Netty."
+-- Webclient Javadoc
+
+Il primo passo propedeutico al suo utilizzo consiste nell'importare la dipendenza
+
+[source, xml]
+----
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+----
+
+Successivamente è opportuno scegliere/creare un nuovo package dove sia possibile collocare tutte le integrazioni esterne al nostro servizio, ad esempio: *com.example.demo.client*. Ogni servizio esterno avra un suo package dedicato in modo da isolare le componenti necessarie al suo funzionamento dal resto del software es: *com.example.demo.client.extservicea*
 
 
+Effettuare una chiamata HTTP con WebClient prevede diverse fasi, principalmente:
 
+1. Costruzione di WebClient
+2. Preparazione della richiesta
+3. Elaborazione della risposta (con gestione eccezioni)
 
+L'istanza di WebClient che costruiremo è la classe genitrice della nostra integrazione, in particolare le configurazioni come timeouts, header di default, host predefinito e così via verranno ereditate da tutte le altre richieste che genereremo attraverso questa istanza:
 
+[source, java]
+----
+WebClient client = WebClient.create();
+----
+
+per creare un'istanza vuota oppure:
+
+[source, java]
+----
+WebClient client = WebClient.create("http://localhost:8080");
+----
+
+per creare un'istanza che faccia riferimento ad un prefissato host e porta oppure: 
+
+[source, java]
+----
+WebClient client = WebClient.builder()
+  .baseUrl("http://localhost:8080")
+  .defaultCookie("cookieKey", "cookieValue")
+  .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) 
+  .defaultUriVariables(Collections.singletonMap("url", "http://localhost:8080"))
+  .build();
+----
+
+per customizzare completamente la nostra istanza tramite l'ausilio del Java Builder, di cui consigliamo di consultare la https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.Builder.html[documentazione java]
 
 
 
