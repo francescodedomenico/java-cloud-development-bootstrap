@@ -2563,6 +2563,61 @@ WebClient client = WebClient.builder()
 
 per customizzare completamente la nostra istanza tramite l'ausilio del Java Builder, di cui consigliamo di consultare la https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.Builder.html[documentazione java]
 
+Una volta creato il client è necessario definire per una specifica API quale sia il verbo HTTP da usare:
+
+[source, java]
+----
+UriSpec<RequestBodySpec> uriSpec = client.post();
+----
+
+restituendo un oggetto di tipo https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.UriSpec.html[UriSpec] attraverso cui sarà possibile definire il path di accesso all'API ed il https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.RequestBodyUriSpec.html[RequestBodySpec]
+
+[source, java]
+----
+RequestBodySpec bodySpec = uriSpec.uri("/resource");
+----
+
+attraverso cui definire il tipo di dato che deve essere spedito nel corpo della richiesta
+
+[source, java]
+----
+RequestHeadersSpec<?> headersSpec = bodySpec.body(
+  Mono.just(new Foo("name")), Foo.class);
+----
+
+oppure nel caso di un sett di chiavi-valori
+
+[source, java]
+----
+LinkedMultiValueMap map = new LinkedMultiValueMap();
+map.add("key1", "value1");
+map.add("key2", "value2");
+RequestHeadersSpec<?> headersSpec = bodySpec.body(
+  BodyInserters.fromMultipartData(map));
+----
+
+Otterremo infine un oggetto RequestHeadersSpec che ci consentirà di definire il set di HTTP Headers della richiesta (se necessario):
+
+[source, java]
+----
+ResponseSpec responseSpec = headersSpec.header(
+    HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+  .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
+  .acceptCharset(StandardCharsets.UTF_8)
+  .ifNoneMatch("*")
+  .ifModifiedSince(ZonedDateTime.now())
+  .retrieve();
+----
+
+Come abbiamo potuto notare questo tipo di impostazione impone un ordine preciso e rigoroso che ci porta direttamente alla ResponseSpec ossia la risposta del nostro servizio.
+
+Possiamo, similmente a come abbiamo visto nel RequestBodySpec, definire un DTO ad hoc per poter deserializzare la risposta in un oggetto java.
+
+Ricodiamo tuttavia che i servizi esterni con cui ci interfacciamo sono *inaffidabili*, per tanto sarà necessario prevedere un catch per tutti i tipi di eccezione che possiamo riscontrare in fase di chiamata.
+
+Come possiamo dunque scrivere correttamente un client http che si integri con un servizio esterno e che sia ben inserito all'interno di un microservizio Spring?
+
+
 
 
 == Soluzioni
